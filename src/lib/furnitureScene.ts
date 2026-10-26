@@ -1,7 +1,7 @@
 import {
   ACESFilmicToneMapping, AmbientLight, BufferGeometry, CanvasTexture, Color, DirectionalLight,
   Group, HemisphereLight, LineBasicMaterial, LineSegments, Mesh, MeshStandardMaterial,
-  PCFShadowMap, PerspectiveCamera, PlaneGeometry, Scene, ShadowMaterial, SRGBColorSpace,
+  PCFShadowMap, PerspectiveCamera, PlaneGeometry, Scene, ShadowMaterial, Spherical, SRGBColorSpace,
   Vector3, WebGLRenderer,
 } from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -96,7 +96,8 @@ export function createFurnitureScene(host: HTMLDivElement, initial: FurnitureMod
   let lastTime = 0;
   let selectedView: ModelView = 'perspective';
   let customView = false;
-  let cameraTween: { from: Vector3; to: Vector3; start: number } | null = null;
+  let cameraTween: { from: Spherical; to: Spherical; start: number } | null = null;
+  const orbit = new Spherical();
   const targetColor = new Color(initial.color);
   let targetRoughness = .65;
 
@@ -126,7 +127,13 @@ export function createFurnitureScene(host: HTMLDivElement, initial: FurnitureMod
     let moving = false;
     if (cameraTween) {
       const progress = options.reducedMotion ? 1 : Math.min((now - cameraTween.start) / 480, 1);
-      camera.position.lerpVectors(cameraTween.from, cameraTween.to, 1 - (1 - progress) ** 3);
+      const eased = 1 - (1 - progress) ** 3;
+      orbit.set(
+        cameraTween.from.radius + (cameraTween.to.radius - cameraTween.from.radius) * eased,
+        cameraTween.from.phi + (cameraTween.to.phi - cameraTween.from.phi) * eased,
+        cameraTween.from.theta + (cameraTween.to.theta - cameraTween.from.theta) * eased,
+      );
+      camera.position.setFromSpherical(orbit).add(controls.target);
       moving = progress < 1;
       if (!moving) cameraTween = null;
     }
@@ -144,14 +151,25 @@ export function createFurnitureScene(host: HTMLDivElement, initial: FurnitureMod
     busyFrame = false;
     if (moving || changed || controls.autoRotate) requestDraw();
   };
+  const animateCamera = (to: Vector3, immediate = false) => {
+    if (immediate || options.reducedMotion) { camera.position.copy(to); camera.lookAt(controls.target); cameraTween = null; }
+    else {
+      const from = new Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+      const end = new Spherical().setFromVector3(to.clone().sub(controls.target));
+      // Follow the shortest arc around the cabinet for front/back transitions.
+      const circle = 2 * Math.PI;
+      const angle = ((end.theta - from.theta + Math.PI) % circle + circle) % circle - Math.PI;
+      end.theta = from.theta + angle;
+      cameraTween = { from, to: end, start: performance.now() };
+    }
+    requestDraw();
+  };
   const frameCamera = (direction: Vector3, immediate = false) => {
     const distance = fitDistance(direction);
     controls.minDistance = distance * .38;
     controls.maxDistance = distance * 2.2;
     const to = direction.multiplyScalar(distance);
-    if (immediate || options.reducedMotion) { camera.position.copy(to); camera.lookAt(controls.target); cameraTween = null; }
-    else cameraTween = { from: camera.position.clone(), to, start: performance.now() };
-    requestDraw();
+    animateCamera(to, immediate);
   };
   const setView = (view: ModelView, immediate = false) => {
     selectedView = view; customView = false;
@@ -222,8 +240,7 @@ export function createFurnitureScene(host: HTMLDivElement, initial: FurnitureMod
       stopRotation();
       const distance = Math.max(controls.minDistance, Math.min(controls.maxDistance, camera.position.distanceTo(controls.target) * factor));
       const to = camera.position.clone().sub(controls.target).normalize().multiplyScalar(distance).add(controls.target);
-      cameraTween = { from: camera.position.clone(), to, start: performance.now() };
-      requestDraw();
+      animateCamera(to);
     },
     rotate(horizontal: number, vertical = 0) {
       stopRotation(); cameraTween = null; customView = true; options.onOrbit();

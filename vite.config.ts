@@ -8,5 +8,7 @@ export default defineConfig({
     setupFiles: ['./tests/setup.ts'],
     restoreMocks: true,
     clearMocks: true,
+    // Keep jsdom workers bounded on desktop machines alongside the live 3D preview.
+    maxWorkers: 2,
   },
 });

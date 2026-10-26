@@ -16,20 +16,22 @@ beforeEach(() => { vi.mocked(downloadQuote).mockReset().mockResolvedValue(undefi
 
 describe('Configuratore cliente', () => {
   it('aggiunge e rimuove ripiani, aggiornando anteprima, stampa e PDF insieme', async () => {
-    const user = userEvent.setup();
     render(<App />);
     await screen.findByTestId('total');
+    const add = screen.getByRole('button', { name: 'Aggiungi un ripiano' });
+    const remove = screen.getByRole('button', { name: 'Rimuovi un ripiano' });
     expect(screen.getByLabelText('Numero di ripiani')).toHaveValue('0');
-    expect(screen.getByRole('button', { name: 'Rimuovi un ripiano' })).toBeDisabled();
-    await user.click(screen.getByRole('button', { name: 'Aggiungi un ripiano' }));
-    await user.click(screen.getByRole('button', { name: 'Aggiungi un ripiano' }));
+    expect(remove).toBeDisabled();
+    fireEvent.click(add);
+    fireEvent.click(add);
     expect(screen.getByTestId('total')).toHaveTextContent('1.339,60');
     expect(screen.getByTestId('print-document')).toHaveTextContent('Ripiani interni (2)');
     expect(screen.getByTestId('print-total')).toHaveTextContent('1.339,60');
-    await user.click(screen.getByRole('button', { name: 'Scarica il preventivo' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Scarica il preventivo' }));
+    await waitFor(() => expect(downloadQuote).toHaveBeenCalledTimes(1));
     expect(vi.mocked(downloadQuote).mock.calls[0][0].shelfCount).toBe(2);
-    await user.click(screen.getByRole('button', { name: 'Rimuovi un ripiano' }));
-    await user.click(screen.getByRole('button', { name: 'Ricomincia' }));
+    fireEvent.click(remove);
+    fireEvent.click(screen.getByRole('button', { name: 'Ricomincia' }));
     expect(screen.getByLabelText('Numero di ripiani')).toHaveValue('0');
     expect(screen.getByTestId('total')).toHaveTextContent('897,72');
     fireEvent.change(screen.getByLabelText('Numero di ripiani'), { target: { value: '1.5' } });
