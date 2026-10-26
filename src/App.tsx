@@ -4,6 +4,7 @@ import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Downl
 import FurniturePreview from './components/FurniturePreview';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import QuotePrintView from './components/QuotePrintView';
+import ShelfControl from './components/ShelfControl';
 import { useCatalog } from './hooks/useCatalog';
 import type { Catalog } from './lib/catalog';
 import { getCatalogMode } from './lib/loadCatalog';
@@ -20,6 +21,8 @@ function SectionHeading({ number, title, children }: { number: string; title: st
 function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => void }) {
   const [dimensions, setDimensions] = useState<Dimensions>(initialDimensions);
   const [selection, setSelection] = useState<Selection>(defaultSelection);
+  const [shelfCount, setShelfCount] = useState('0');
+  const count = /^\d+$/.test(shelfCount) ? Number(shelfCount) : NaN;
   const [showFormula, setShowFormula] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
@@ -29,16 +32,16 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
     finishId: catalog.finishes.some(i => i.id === selection.finishId) ? selection.finishId : catalog.finishes[0].id,
     deliveryId: catalog.deliveries.some(i => i.id === selection.deliveryId) ? selection.deliveryId : catalog.deliveries[0].id,
   };
-  const quote = calculateQuote({ ...dimensions, ...resolvedSelection }, catalog);
+  const quote = calculateQuote({ ...dimensions, ...resolvedSelection, shelfCount: count }, catalog);
   const errors = validateDimensions(dimensions, catalog);
   const wood = catalog.woods.find(i => i.id === resolvedSelection.woodId)!;
   const finish = catalog.finishes.find(i => i.id === resolvedSelection.finishId)!;
   const delivery = catalog.deliveries.find(i => i.id === resolvedSelection.deliveryId)!;
   const select = (field: keyof Selection, id: string) => setSelection(current => ({ ...current, [field]: id }));
-  const reset = () => { setDimensions(initialDimensions); setSelection(defaultSelection); };
+  const reset = () => { setDimensions(initialDimensions); setSelection(defaultSelection); setShelfCount('0'); };
   const savePdf = async () => {
     if (!quote || pdfBusy) return;
-    const snapshot = { ...dimensions, ...resolvedSelection };
+    const snapshot = { ...dimensions, ...resolvedSelection, shelfCount: count };
     const catalogSnapshot = structuredClone(catalog);
     setPdfBusy(true);
     setPdfError(null);
@@ -99,8 +102,9 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
         </fieldset>
       </section>
 
+      <ShelfControl dimensions={dimensions} catalog={catalog} value={shelfCount} onChange={setShelfCount} />
       <section className="config-section delivery-section">
-        <SectionHeading number="04" title="Come arriva da te?" />
+        <SectionHeading number="05" title="Come arriva da te?" />
         <p className="section-description">Scegli il ritiro o la consegna più adatta.</p>
         <fieldset className="delivery-options"><legend className="sr-only">Consegna</legend>
           {catalog.deliveries.map((item, index) => <label className={`delivery-option ${resolvedSelection.deliveryId === item.id ? 'selected' : ''}`} key={item.id}>
@@ -117,7 +121,7 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
     <aside className="project-sidebar" aria-label="Anteprima e preventivo">
       <div className="preview-panel">
         <div className="preview-topline"><span className="eyebrow">PRENDE FORMA, LA TUA IDEA</span><span className="preview-label"><span /> Anteprima</span></div>
-        <FurniturePreview dimensions={dimensions} color={wood.color} name={wood.name} valid={Boolean(quote)} />
+        <FurniturePreview dimensions={dimensions} color={wood.color} name={wood.name} valid={Boolean(quote)} shelfCount={quote?.shelves.count ?? 0} />
         <div className="preview-caption"><span><i style={{ backgroundColor: wood.color }} />{wood.name}<span className="caption-divider">/</span>{finish.name}</span><small>Illustrazione indicativa</small></div>
       </div>
 
@@ -125,14 +129,16 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
         <div className="quote-title"><h2 id="quote-heading">Il tuo preventivo</h2><span><span className="live-dot" /> In tempo reale</span></div>
         <div aria-live="polite" aria-atomic="true" data-testid="quote-result">
           {quote ? <>
-            <div className="quote-details"><div><span>Superficie totale <button className="inline-info" aria-label="Come si calcola la superficie" aria-expanded={showFormula} onClick={() => setShowFormula(v => !v)}><CircleHelp size={13} /></button></span><strong>{formatNumber(quote.area, 4)} m²</strong></div>
-              {showFormula && <p className="formula-note">Tutti i sei lati inclusi: 2 × (larghezza × altezza + larghezza × profondità + altezza × profondità) ÷ 10.000.</p>}
+            <div className="quote-details"><div><span>Superficie totale <button className="inline-info" aria-label="Come si calcola la superficie" aria-expanded={showFormula} onClick={() => setShowFormula(v => !v)}><CircleHelp size={13} /></button></span><strong>{formatNumber(quote.totalArea, 4)} m²</strong></div>
+              {showFormula && <p className="formula-note">Struttura: sei lati, 2 × (L × H + L × P + H × P) ÷ 10.000. Ripiani interni: larghezza L − 2 spessori, profondità P − 1 spessore; entrambe le facce e tutti i bordi inclusi.</p>}
               <div><span>Mobile e finitura</span><strong>{formatCurrency(quote.furniture)}</strong></div>
+              <div><span>Ripiani interni ({quote.shelves.count})</span><strong>{formatCurrency(quote.shelves.amount)}</strong></div>
+              {quote.roundingAdjustment !== 0 && <div><span>Arrotondamento</span><strong>{formatCurrency(quote.roundingAdjustment)}</strong></div>}
               <div><span>{delivery.name}</span><strong>{formatCurrency(delivery.price)}</strong></div>
             </div>
             <div className="quote-subtotals"><div><span>Imponibile</span><strong>{formatCurrency(quote.net)}</strong></div><div><span>IVA ({formatNumber(catalog.settings.vatRate * 100)}%)</span><strong>{formatCurrency(quote.vat)}</strong></div></div>
             <div className="quote-total"><div><span>Il tuo totale</span><small>IVA inclusa</small></div><strong data-testid="total">{formatCurrency(quote.total)}</strong></div>
-          </> : <div className="quote-invalid"><Ruler size={28} strokeWidth={1.3} /><h3>Un piccolo controllo alle misure</h3><p>Correggi i campi indicati per visualizzare il tuo preventivo.</p></div>}
+          </> : <div className="quote-invalid"><Ruler size={28} strokeWidth={1.3} /><h3>Un piccolo controllo al progetto</h3><p>Correggi misure e ripiani nei campi indicati per visualizzare il tuo preventivo.</p></div>}
         </div>
         <button className="print-button" disabled={!quote || pdfBusy} aria-busy={pdfBusy} onClick={savePdf}>{pdfBusy ? <LoaderCircle className="spin" size={18} /> : <Download size={18} />} {pdfBusy ? 'Creo il PDF…' : 'Scarica il preventivo'} <ArrowRight size={16} /></button>
         {pdfError && <p className="pdf-error" role="alert">{pdfError}</p>}
@@ -176,11 +182,11 @@ export default function App() {
       <div hidden={state.status !== 'ready'}>{catalog && <Configurator catalog={catalog} refresh={state.refresh} />}</div>
       <section className="closing-note"><span className="closing-icon"><Leaf size={27} strokeWidth={1} /></span><div><h2>Le cose belle iniziano da un’idea.</h2><p>Un legno da scegliere. Uno spazio da immaginare. Un mobile che parla di te.</p></div><span className="closing-lines" aria-hidden="true">///</span></section>
     </main>
-    <footer className="site-footer"><span>legno&co. <span>Il legno incontra le tue idee.</span></span><small>Progetto didattico · Azienda e dati inventati</small><button onClick={() => dialog.current?.showModal()}><CircleHelp size={14} /> Informazioni</button></footer>
+    <footer className="site-footer"><span>legno&co. <span>Il legno incontra le tue idee.</span></span><small>Progetto didattico · Azienda e dati inventati</small><a className="admin-link" href="/admin">Area admin</a><button onClick={() => dialog.current?.showModal()}><CircleHelp size={14} /> Informazioni</button></footer>
     <dialog ref={dialog} className="info-dialog" onClick={e => { if (e.target === e.currentTarget) dialog.current?.close(); }}>
       <button className="dialog-close" aria-label="Chiudi informazioni" onClick={() => dialog.current?.close()}><X size={22} /></button>
       <span className="eyebrow">POCHE SCELTE, TUTTO CHIARO</span><h2>Dal tuo spazio<br />al tuo preventivo.</h2><ol><li><strong>Prendi le misure.</strong> Inserisci larghezza, altezza e profondità in centimetri.</li><li><strong>Scegli i dettagli.</strong> Seleziona legno, finitura e modalità di consegna.</li><li><strong>Scopri il prezzo.</strong> Superficie e importi si aggiornano subito, con IVA separata.</li></ol>
-      <p>La superficie comprende tutti i sei lati del mobile. Il prezzo si ottiene moltiplicandola per il prezzo al m² del legno più il supplemento della finitura. Si aggiungono la consegna e l’IVA del listino.</p><p>Imponibile e IVA sono arrotondati al centesimo. L’illustrazione è indicativa e non rappresenta un progetto esecutivo.</p><p className="dialog-privacy"><LockKeyhole size={18} /> Misure e scelte restano nel browser. Nessun account, nessun dato cliente salvato o inviato.</p><p className="educational-note">Legno & Co. è un’azienda inventata per un progetto didattico. Il preventivo non costituisce un’offerta commerciale.</p><button className="primary-button" onClick={() => dialog.current?.close()}><ArrowLeft size={15} /> Torna al tuo progetto</button>
+      <p>La superficie comprende tutti i sei lati del mobile e i ripiani aggiunti, con entrambe le facce e tutti i bordi. Il prezzo usa il legno e la finitura scelti; si aggiungono la consegna e l’IVA del listino.</p><p>I ripiani hanno larghezza interna pari alla larghezza del mobile meno due spessori e profondità pari alla profondità del mobile meno uno spessore. L’altezza e lo spessore limitano la quantità possibile.</p><p>Imponibile e IVA sono arrotondati al centesimo. L’illustrazione e i vani interni sono indicativi: non rappresentano un progetto esecutivo.</p><p className="dialog-privacy"><LockKeyhole size={18} /> Misure e scelte restano nel browser. Nessun account cliente, nessun dato del preventivo salvato o inviato.</p><p className="educational-note">Legno & Co. è un’azienda inventata per un progetto didattico. Il preventivo non costituisce un’offerta commerciale.</p><button className="primary-button" onClick={() => dialog.current?.close()}><ArrowLeft size={15} /> Torna al tuo progetto</button>
     </dialog>
   </>;
 }

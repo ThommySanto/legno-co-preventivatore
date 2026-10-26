@@ -14,6 +14,10 @@ const catalog = parseCatalog(rawCatalog);
 const input = { width: '120', height: '80', depth: '40', woodId: 'rovere', finishId: 'cera-naturale', deliveryId: 'entro-50-km' };
 
 describe('Documento PDF', () => {
+  it('mantiene una pagina A4 anche con i ripiani aggiuntivi', async () => {
+    const pdf = await PDFDocument.load(await createQuotePdf({ ...input, shelfCount: 2 }, catalog, fonts));
+    expect(pdf.getPageCount()).toBe(1);
+  });
   it('genera un A4 valido di una pagina con i caratteri incorporati', async () => {
     const now = new Date('2026-10-26T12:00:00Z');
     const bytes = await createQuotePdf(input, catalog, fonts, now);

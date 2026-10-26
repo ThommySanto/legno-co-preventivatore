@@ -3,8 +3,8 @@ import type { CSSProperties } from 'react';
 import type { Dimensions } from '../lib/quote';
 import { formatNumber, parseDimension } from '../lib/quote';
 
-export default function FurniturePreview({ dimensions, color, name, valid }: {
-  dimensions: Dimensions; color: string; name: string; valid: boolean;
+export default function FurniturePreview({ dimensions, color, name, valid, shelfCount = 0 }: {
+  dimensions: Dimensions; color: string; name: string; valid: boolean; shelfCount?: number;
 }) {
   const id = useId().replace(/:/g, '');
   const l = valid ? parseDimension(dimensions.width)!.toNumber() : 120;
@@ -20,7 +20,7 @@ export default function FurniturePreview({ dimensions, color, name, valid }: {
   const dimension = (key: keyof Dimensions) => valid ? `${formatNumber(parseDimension(dimensions[key])!.toNumber())} cm` : '—';
 
   return <svg viewBox="0 0 430 375" className="furniture-svg" role="img" aria-label={valid
-    ? `Anteprima indicativa in ${name}: larghezza ${dimension('width')}, altezza ${dimension('height')}, profondità ${dimension('depth')}`
+    ? `Anteprima indicativa in ${name}: larghezza ${dimension('width')}, altezza ${dimension('height')}, profondità ${dimension('depth')}, ${shelfCount} ripiani`
     : 'Anteprima indicativa del mobile. Inserisci misure valide per aggiornarla.'}
     style={{ '--wood-color': color } as CSSProperties}>
     <defs>
@@ -41,10 +41,10 @@ export default function FurniturePreview({ dimensions, color, name, valid }: {
       <rect x={x + edge} y={y + edge} width={Math.max(1, width - edge * 2)} height={height - edge * 2} fill={color} />
       <rect x={x + edge} y={y + edge} width={Math.max(1, width - edge * 2)} height={height - edge * 2} fill={`url(#${id}-inside)`} />
       <rect x={x + edge} y={y + edge} width={Math.max(1, width - edge * 2)} height={height - edge * 2} fill={`url(#${id}-grain)`} />
-      {[1, 2].map(level => <g key={level}>
-        <path d={`M${x + edge} ${y + height * level / 3}l${Math.min(depth * .55, width / 4)} ${-Math.min(depth * .25, height / 10)}h${Math.max(1, width - edge * 2 - Math.min(depth * .55, width / 4))}v${Math.min(depth * .25, height / 10)}Z`} fill={color} />
-        <path d={`M${x + edge} ${y + height * level / 3}h${Math.max(1, width - edge * 2)}v${edge * .55}h${-Math.max(1, width - edge * 2)}Z`} fill={color} />
-        <path d={`M${x + edge} ${y + height * level / 3 + edge * .55}h${Math.max(1, width - edge * 2)}`} stroke="#3a2c20" strokeOpacity=".22" />
+      {Array.from({ length: shelfCount }, (_, i) => i + 1).map(level => <g key={level} data-shelf="true">
+        <path d={`M${x + edge} ${y + height * level / (shelfCount + 1)}l${Math.min(depth * .55, width / 4)} ${-Math.min(depth * .25, height / 10)}h${Math.max(1, width - edge * 2 - Math.min(depth * .55, width / 4))}v${Math.min(depth * .25, height / 10)}Z`} fill={color} />
+        <path d={`M${x + edge} ${y + height * level / (shelfCount + 1)}h${Math.max(1, width - edge * 2)}v${Math.min(edge * .55, height / (shelfCount + 1) / 3)}h${-Math.max(1, width - edge * 2)}Z`} fill={color} />
+        <path d={`M${x + edge} ${y + height * level / (shelfCount + 1)}h${Math.max(1, width - edge * 2)}`} stroke="#3a2c20" strokeOpacity=".22" />
       </g>)}
       <path d={`M${x + edge} ${y + height}v8M${x + width - edge} ${y + height}v8`} stroke={color} strokeWidth={edge * .7} />
     </g>

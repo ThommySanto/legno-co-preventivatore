@@ -17,3 +17,11 @@
 - Per misure con decimali, la commessa non definisce arrotondamenti. Si documenta l'arrotondamento commerciale dell'imponibile e dell'IVA al centesimo, mantenendo la superficie esatta nel calcolo.
 
 La commessa indica il 30 ottobre 2026 per il piano e il 20 novembre 2026 per la pubblicazione. Lo sviluppo e la pubblicazione sono autorizzati dall'utente.
+
+## Estensione richiesta: amministrazione e ripiani
+
+Realizzata un’area /admin con accesso Supabase Auth, conferma email e autorizzazione database tramite allowlist privata. L’editor pubblica prezzi e parametri in una sola transazione, con controllo della revisione. L’utente configura la propria password dal sito; le sessioni admin restano nella singola scheda.
+
+Ripiani configurabili da zero, superficie calcolata sulle misure interne con due facce e quattro bordi, stesso legno e finitura. Spessore iniziale 2 cm confermato dall’utente, modificabile dall’admin. Quantità, anteprima, costi, IVA, PDF e stampa derivano dallo stesso calcolo.
+
+Verifiche aggiunte: casi numerici con ripiani, limiti fisici e di listino, errori nell’editor, conferma prima della pubblicazione, RLS, email non confermata, rollback di salvataggi invalidi e conflitti di revisione. Le prove SQL usano fixture in transazione annullata.
