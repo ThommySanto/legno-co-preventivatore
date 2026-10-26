@@ -8,4 +8,5 @@ coverage/
 .vercel/
 *.local
 *.log
+*.tsbuildinfo
 artifacts/
