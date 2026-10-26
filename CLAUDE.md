@@ -22,6 +22,7 @@ L'utente ha confermato di includere anche la lezione 4: sviluppo, verifiche e pu
 - Conservare entrambi i temi, chiaro e scuro, con selettore accessibile nell'intestazione. Il tema chiaro resta predefinito. Si può salvare soltanto la preferenza del tema nel browser, con chiave legno-co:theme:v1; nessun dato del preventivo va salvato.
 - Curare la leggibilità in entrambi i temi: testi principali circa 14–16 px, descrizioni leggibili, campi e schede con bordi più arrotondati. Su telefono disporre le finiture in una colonna quando lo spazio non basta.
 - Offrire un PDF A4 scaricabile, impaginato e generato sul dispositivo, con dati del preventivo, IVA e totale verificati. Il PDF resta chiaro in entrambi i temi e mantiene lo stato al momento del clic.
+- Anteprima del sito in vero 3D ruotabile e ingrandibile, con viste rapide, misure, dettagli dei materiali e vista separata dei pannelli. Sono comandi esclusivamente visivi: non alterano prezzi, configurazione o calcoli. Caricare il motore soltanto quando l’anteprima diventa visibile; sospendere i frame fuori vista o su scheda nascosta, liberare le risorse alla chiusura e mantenere un’illustrazione se WebGL non è disponibile. La rotazione automatica parte soltanto su richiesta. Rispettare movimento ridotto e accesso da tastiera. PDF e stampa conservano la propria illustrazione vettoriale statica.
 - Mai inserire segreti nel repository. Le sole credenziali client sono URL e chiave pubblicabile in variabili d'ambiente. Vietate chiavi secret/service_role.
 
 ## Flusso di lavoro

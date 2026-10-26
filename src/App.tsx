@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Download, Leaf, LoaderCircle, LockKeyhole, PackageCheck, Printer, RefreshCw, RotateCcw, Ruler, ShieldCheck, Sparkles, Truck, X } from 'lucide-react';
-import FurniturePreview from './components/FurniturePreview';
+import ModelViewer from './components/ModelViewer';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import QuotePrintView from './components/QuotePrintView';
 import ShelfControl from './components/ShelfControl';
@@ -120,9 +120,8 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
 
     <aside className="project-sidebar" aria-label="Anteprima e preventivo">
       <div className="preview-panel">
-        <div className="preview-topline"><span className="eyebrow">PRENDE FORMA, LA TUA IDEA</span><span className="preview-label"><span /> Anteprima</span></div>
-        <FurniturePreview dimensions={dimensions} color={wood.color} name={wood.name} valid={Boolean(quote)} shelfCount={quote?.shelves.count ?? 0} />
-        <div className="preview-caption"><span><i style={{ backgroundColor: wood.color }} />{wood.name}<span className="caption-divider">/</span>{finish.name}</span><small>Illustrazione indicativa</small></div>
+        <div className="preview-topline"><span className="eyebrow">PRENDE FORMA, LA TUA IDEA</span><span className="preview-label"><span /> Studio</span></div>
+        <ModelViewer dimensions={dimensions} wood={wood} finish={finish} shelfCount={quote?.shelves.count ?? 0} thicknessCm={catalog.settings.shelfThicknessCm} valid={Boolean(quote)} />
       </div>
 
       <section className="quote-panel" id="riepilogo" aria-labelledby="quote-heading">
@@ -137,7 +136,7 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
               <div><span>{delivery.name}</span><strong>{formatCurrency(delivery.price)}</strong></div>
             </div>
             <div className="quote-subtotals"><div><span>Imponibile</span><strong>{formatCurrency(quote.net)}</strong></div><div><span>IVA ({formatNumber(catalog.settings.vatRate * 100)}%)</span><strong>{formatCurrency(quote.vat)}</strong></div></div>
-            <div className="quote-total"><div><span>Il tuo totale</span><small>IVA inclusa</small></div><strong data-testid="total">{formatCurrency(quote.total)}</strong></div>
+            <div className="quote-total"><div><span>Il tuo totale</span><small>IVA inclusa</small></div><strong data-testid="total" className="animated-total" key={quote.total}>{formatCurrency(quote.total)}</strong></div>
           </> : <div className="quote-invalid"><Ruler size={28} strokeWidth={1.3} /><h3>Un piccolo controllo al progetto</h3><p>Correggi misure e ripiani nei campi indicati per visualizzare il tuo preventivo.</p></div>}
         </div>
         <button className="print-button" disabled={!quote || pdfBusy} aria-busy={pdfBusy} onClick={savePdf}>{pdfBusy ? <LoaderCircle className="spin" size={18} /> : <Download size={18} />} {pdfBusy ? 'Creo il PDF…' : 'Scarica il preventivo'} <ArrowRight size={16} /></button>

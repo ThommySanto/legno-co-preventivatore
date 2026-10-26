@@ -11,6 +11,7 @@ import './themes.css';
 import './refinements.css';
 import './print.css';
 import './admin.css';
+import './experience.css';
 
 const AdminPage = lazy(() => import('./components/AdminPage'));
 createRoot(document.getElementById('root')!).render(<StrictMode>{window.location.pathname.replace(/\/$/, '') === '/admin' ? <Suspense fallback={<p role="status" className="admin-loading">Apriamo la bottega…</p>}><AdminPage /></Suspense> : <App />}</StrictMode>);
