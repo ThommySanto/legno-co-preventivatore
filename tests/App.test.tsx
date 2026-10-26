@@ -67,6 +67,7 @@ describe('Configuratore cliente', () => {
     await screen.findByTestId('total');
     fireEvent.change(screen.getByLabelText('Larghezza'), { target: { value: '20' } });
     expect(screen.queryByTestId('total')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('print-document')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Larghezza')).toHaveAttribute('aria-invalid', 'true');
     expect(screen.getByText('La misura deve essere tra 30 e 300 cm.')).toBeVisible();
     expect(screen.getByRole('button', { name: /Stampa/ })).toBeDisabled();

@@ -3,6 +3,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Download, Leaf, LoaderCircle, LockKeyhole, PackageCheck, Printer, RefreshCw, RotateCcw, Ruler, ShieldCheck, Sparkles, Truck, X } from 'lucide-react';
 import FurniturePreview from './components/FurniturePreview';
 import ThemeSwitcher from './components/ThemeSwitcher';
+import QuotePrintView from './components/QuotePrintView';
 import { useCatalog } from './hooks/useCatalog';
 import type { Catalog } from './lib/catalog';
 import { getCatalogMode } from './lib/loadCatalog';
@@ -140,8 +141,8 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
       </section>
       <div className="sidebar-trust"><ShieldCheck size={17} /><span>Nessuna registrazione. Nessun impegno.</span></div>
       <button className="text-button refresh-button" onClick={refresh}><RefreshCw size={12} /> Aggiorna il listino</button>
-      <div className="print-only"><h2>Configurazione del mobile</h2><p>Larghezza: {dimensions.width} cm · Altezza: {dimensions.height} cm · Profondità: {dimensions.depth} cm</p><p>Legno: {wood.name} · Finitura: {finish.name} · Consegna: {delivery.name}</p><p>Listino {catalog.version} · {new Intl.DateTimeFormat('it-IT', { timeZone: 'Europe/Rome' }).format(new Date())}</p></div>
     </aside>
+    {quote && <QuotePrintView dimensions={dimensions} quote={quote} catalog={catalog} />}
     {quote && <a className="mobile-total" href="#riepilogo"><span><small>Il tuo totale · IVA inclusa</small><strong>{formatCurrency(quote.total)}</strong></span><span>Vedi dettagli <ArrowDown size={15} /></span></a>}
   </div>;
 }

@@ -1,0 +1,61 @@
+.quote-print { display: none; }
+
+@media print {
+  @page { size: A4 portrait; margin: 14mm; }
+  .site-header, .quote-panel, .print-only { display: none !important; }
+  .project-sidebar { display: none !important; }
+  .configurator-layout { display: block; padding-top: 0; }
+  .quote-print { display: block !important; width: 100%; color: #253b30; background: #fff; font-family: 'Inter', Arial, sans-serif; font-size: 10pt; line-height: 1.5; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .quote-print * { box-sizing: border-box; }
+  .quote-print-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16pt; border-bottom: .6pt solid #dce3d1; padding-bottom: 10pt; }
+  .quote-print-brand { display: flex; align-items: center; gap: 11pt; }
+  .quote-print-brand .brand-mark { width: 24pt; height: 29pt; transform: scale(.8); transform-origin: left top; margin-right: 0; }
+  .quote-print-brand .brand-mark > span { border-color: #253b30; }
+  .quote-print-brand .brand-mark i { background: #253b30; }
+  .quote-print-brand strong { display: block; font-size: 23pt; font-weight: 600; line-height: 1.1; letter-spacing: -.8pt; }
+  .quote-print-brand small { display: block; font-size: 7.2pt; font-weight: 600; margin-top: 6pt; color: #65705f; letter-spacing: .5pt; }
+  .quote-print-date { text-align: right; padding-top: 2pt; }
+  .quote-print-date strong { font-size: 8pt; font-weight: 600; color: #65705f; display: block; }
+  .quote-print-date span { font-size: 10pt; display: block; margin-top: 8pt; }
+  .quote-print-intro { margin: 14pt 0 16pt; }
+  .quote-print-intro h1 { font: 600 30pt/1.2 'Inter', Arial, sans-serif; letter-spacing: -.8pt; margin: 0; }
+  .quote-print-intro p { font: italic 27pt/1.25 'Lora', Georgia, serif; color: #738265; margin: 2pt 0 8pt; }
+  .quote-print-intro > span { font-size: 10.5pt; color: #65705f; }
+  .quote-print-config { display: grid; grid-template-columns: 42% minmax(0, 1fr); gap: 20pt; background: #f0f3e9; border-radius: 10pt; padding: 12pt 18pt; break-inside: avoid; }
+  .quote-print-config figure { margin: 0; }
+  .quote-print-config .furniture-svg { width: 100%; height: 125pt; max-height: none; min-height: 0; padding: 0; }
+  .quote-print-config figcaption { text-align: center; font-size: 7.5pt; color: #65705f; margin: -5pt 0 0; }
+  .quote-print dl, .quote-print dd, .quote-print dt { margin: 0; }
+  .quote-print-config dl { display: flex; flex-direction: column; gap: 10pt; justify-content: center; }
+  .quote-print-config dt { font-size: 7.5pt; color: #65705f; margin-bottom: 4pt; font-weight: 600; }
+  .quote-print-config dd { font-size: 10.5pt; line-height: 1.45; font-weight: 600; overflow-wrap: anywhere; }
+  .quote-print-measures { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10pt; padding: 12pt 0 14pt; break-inside: avoid; }
+  .quote-print-measures dt { font-size: 7.5pt; color: #65705f; font-weight: 600; }
+  .quote-print-measures dd { font-size: 13.5pt; font-weight: 600; margin-top: 6pt; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+  .quote-print-prices h2 { font: 600 8.5pt/1.5 'Inter', Arial, sans-serif; color: #65705f; margin: 0 0 12pt; }
+  .quote-print-prices table { border-collapse: collapse; width: 100%; table-layout: fixed; }
+  .quote-print-prices th { color: #65705f; font-size: 8.5pt; font-weight: 600; text-align: right; border-bottom: .6pt solid #dce3d1; padding: 0 0 9pt; }
+  .quote-print-prices th:first-child { text-align: left; width: 64%; }
+  .quote-print-prices th:nth-child(2) { width: 16%; }
+  .quote-print-prices th:last-child { width: 20%; }
+  .quote-print-prices tr { break-inside: avoid; }
+  .quote-print-prices td { border-bottom: .6pt solid #dce3d1; padding: 10pt 0; vertical-align: top; text-align: right; font-size: 10.5pt; font-variant-numeric: tabular-nums; }
+  .quote-print-prices td:first-child { text-align: left; padding-right: 16pt; overflow-wrap: anywhere; }
+  .quote-print-prices td:not(:first-child) { white-space: nowrap; }
+  .quote-print-prices td strong { font-weight: 600; }
+  .quote-print-prices td:first-child strong { display: block; }
+  .quote-print-prices td:first-child span { display: block; font-size: 9pt; color: #65705f; margin-top: 3pt; }
+  .quote-print-summary { break-inside: avoid; padding-top: 12pt; }
+  .quote-print-summary > dl { width: 42%; margin: 0 0 14pt auto; }
+  .quote-print-summary > dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 14pt; margin-bottom: 7pt; }
+  .quote-print-summary dt { color: #65705f; font-size: 10pt; }
+  .quote-print-summary dd { font-size: 11pt; font-weight: 600; white-space: nowrap; }
+  .quote-print-total { display: flex; align-items: center; justify-content: space-between; gap: 18pt; padding: 12pt 20pt; min-height: 65pt; background: #253b30; color: #f1f5e8; border-radius: 10pt; }
+  .quote-print-total > span > strong { display: block; font-size: 10pt; font-weight: 600; }
+  .quote-print-total small { display: block; font-size: 9pt; color: #c1cfb3; margin-top: 5pt; }
+  .quote-print-total > strong { font: italic 31pt/1.2 'Lora', Georgia, serif; white-space: nowrap; letter-spacing: -.5pt; }
+  .quote-print-summary > p { font-size: 8.3pt; line-height: 1.6; color: #65705f; margin-top: 12pt; }
+  .quote-print-summary > p + p { margin-top: 1pt; }
+  .quote-print-footer { display: flex; justify-content: space-between; gap: 16pt; border-top: .6pt solid #dce3d1; padding-top: 8pt; margin-top: 14pt; color: #65705f; font-size: 7pt; }
+  .quote-print-footer > span:last-child { text-align: right; overflow-wrap: anywhere; }
+}
