@@ -1,6 +1,6 @@
 # Legno & Co. Preventivatore
 
-Applicazione React e TypeScript per configurare mobili su misura. Supabase conserva soltanto il catalogo pubblico. Vercel pubblica il frontend statico. Azienda, nominativi e dati sono inventati per un progetto didattico.
+Applicazione React e TypeScript per configurare mobili su misura. Supabase conserva il catalogo e gestisce l’accesso amministratore; i preventivi non vengono salvati. Vercel pubblica il frontend statico. L’azienda e il listino iniziale sono inventati per un progetto didattico.
 
 [Apri l’applicazione online](https://legno-co-preventivatore.vercel.app).
 
@@ -100,7 +100,7 @@ Non caricare mai `.env.local`, `node_modules` o la cartella `.vercel`. Nessun se
 
 ## Privacy e interfaccia
 
-Il selettore «Chiaro / Scuro» nell'intestazione cambia l'aspetto senza azzerare il preventivo. Il tema chiaro originale resta predefinito; il tema scuro usa verde bosco, testo avorio e accenti lime. La sola preferenza del tema viene salvata sul dispositivo con la chiave `legno-co:theme:v1`, senza inviarla a servizi esterni. Se il browser impedisce il salvataggio, il selettore continua a funzionare nella pagina aperta. La stampa resta chiara in entrambi i temi.
+Il selettore «Chiaro / Scuro» nell'intestazione cambia l'aspetto senza azzerare il preventivo. Il tema chiaro originale resta predefinito; il tema scuro usa verde bosco, testo avorio e accenti lime. Per il visitatore si salva soltanto la preferenza del tema, con la chiave `legno-co:theme:v1`, senza inviarla a servizi esterni. L’area admin conserva separatamente la sessione di accesso nella singola scheda, come descritto sopra. Se il browser impedisce il salvataggio, il selettore continua a funzionare nella pagina aperta. La stampa resta chiara in entrambi i temi.
 
 Le misure e le scelte vivono esclusivamente nello stato React, non sono salvate in localStorage, cookie, URL, database o log applicativi. Il frontend recupera il catalogo e, per generare il PDF, i caratteri locali del sito. Nessuna richiesta contiene i dati del preventivo. Non è incluso alcun servizio di analisi o tracciamento. I normali servizi di hosting e database gestiscono i propri log delle richieste HTTP.
 
