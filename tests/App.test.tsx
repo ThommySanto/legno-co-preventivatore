@@ -9,6 +9,8 @@ import { downloadQuote } from '../src/lib/downloadQuote';
 
 vi.mock('../src/lib/loadCatalog', () => ({ loadCatalog: vi.fn(), getCatalogMode: () => 'supabase' }));
 vi.mock('../src/lib/downloadQuote', () => ({ downloadQuote: vi.fn() }));
+// Price/print integration tests are independent of the GPU viewport, tested separately.
+vi.mock('../src/components/ModelViewer', () => ({ default: () => <div aria-label="Anteprima interattiva" /> }));
 beforeEach(() => { vi.mocked(loadCatalog).mockReset().mockResolvedValue(parseCatalog(rawCatalog)); });
 beforeEach(() => { vi.mocked(downloadQuote).mockReset().mockResolvedValue(undefined); });
 
