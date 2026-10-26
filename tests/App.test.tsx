@@ -5,11 +5,41 @@ import rawCatalog from '../public/data/catalog.json';
 import { parseCatalog } from '../src/lib/catalog';
 import { loadCatalog } from '../src/lib/loadCatalog';
 import App from '../src/App';
+import { downloadQuote } from '../src/lib/downloadQuote';
 
 vi.mock('../src/lib/loadCatalog', () => ({ loadCatalog: vi.fn(), getCatalogMode: () => 'supabase' }));
-beforeEach(() => vi.mocked(loadCatalog).mockReset().mockResolvedValue(parseCatalog(rawCatalog)));
+vi.mock('../src/lib/downloadQuote', () => ({ downloadQuote: vi.fn() }));
+beforeEach(() => { vi.mocked(loadCatalog).mockReset().mockResolvedValue(parseCatalog(rawCatalog)); });
+beforeEach(() => { vi.mocked(downloadQuote).mockReset().mockResolvedValue(undefined); });
 
 describe('Configuratore cliente', () => {
+  it('scarica una copia del preventivo e impedisce doppi clic durante la creazione', async () => {
+    let finish!: () => void;
+    vi.mocked(downloadQuote).mockImplementation(() => new Promise(resolve => { finish = resolve; }));
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByTestId('total');
+    fireEvent.change(screen.getByLabelText('Larghezza'), { target: { value: '150' } });
+    await user.click(screen.getByRole('button', { name: 'Scarica il preventivo' }));
+    expect(screen.getByRole('button', { name: 'Creo il PDF…' })).toBeDisabled();
+    expect(downloadQuote).toHaveBeenCalledTimes(1);
+    fireEvent.change(screen.getByLabelText('Larghezza'), { target: { value: '180' } });
+    expect(vi.mocked(downloadQuote).mock.calls[0][0].width).toBe('150');
+    expect(vi.mocked(downloadQuote).mock.calls[0][1]).toEqual(parseCatalog(rawCatalog));
+    await act(async () => finish());
+    expect(screen.getByRole('button', { name: 'Scarica il preventivo' })).toBeEnabled();
+  });
+  it('mostra un errore recuperabile se il PDF non può essere creato', async () => {
+    vi.mocked(downloadQuote).mockRejectedValueOnce(new Error('Font non disponibile'));
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByTestId('total');
+    await user.click(screen.getByRole('button', { name: 'Scarica il preventivo' }));
+    expect(await screen.findByRole('alert')).toHaveTextContent('Non riusciamo a creare il PDF');
+    expect(screen.getByTestId('total')).toHaveTextContent('897,72');
+    await user.click(screen.getByRole('button', { name: 'Scarica il preventivo' }));
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
   it('cambia tema conservando misure e totale e salva solo la preferenza di aspetto', async () => {
     const user = userEvent.setup();
     localStorage.clear();

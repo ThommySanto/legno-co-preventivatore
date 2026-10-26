@@ -54,10 +54,10 @@ export default function FurniturePreview({ dimensions, color, name, valid }: {
       <path d={`M${x - 23} ${y}h-13m13 ${height}h-13`} />
       <path d={`M${x - 31} ${y + 3}v${height - 6}`} markerStart={`url(#${id}-arrow)`} markerEnd={`url(#${id}-arrow)`} />
     </g>
-    <g fill="var(--preview-label, #60695d)" fontSize="11" fontFamily="Arial, sans-serif" textAnchor="middle">
+    <g fill="var(--preview-label, #60695d)" fontSize="13" fontFamily="Arial, sans-serif" textAnchor="middle">
       <text x={x + width / 2} y={y + height + 53}>{dimension('width')}</text>
       <text transform={`translate(${x - 43}, ${y + height / 2}) rotate(-90)`}>{dimension('height')}</text>
-      <text x={x + width + depth + 8} y={y + height - depth / 4} textAnchor="start" fontSize="10">P {dimension('depth')}</text>
+      <text x={x + width + depth + 8} y={y + height - depth / 4} textAnchor="start" fontSize="12">P {dimension('depth')}</text>
     </g>
   </svg>;
 }

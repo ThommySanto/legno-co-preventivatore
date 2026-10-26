@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Leaf, LoaderCircle, LockKeyhole, PackageCheck, Printer, RefreshCw, RotateCcw, Ruler, ShieldCheck, Sparkles, Truck, X } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Download, Leaf, LoaderCircle, LockKeyhole, PackageCheck, Printer, RefreshCw, RotateCcw, Ruler, ShieldCheck, Sparkles, Truck, X } from 'lucide-react';
 import FurniturePreview from './components/FurniturePreview';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import { useCatalog } from './hooks/useCatalog';
@@ -20,6 +20,8 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
   const [dimensions, setDimensions] = useState<Dimensions>(initialDimensions);
   const [selection, setSelection] = useState<Selection>(defaultSelection);
   const [showFormula, setShowFormula] = useState(false);
+  const [pdfBusy, setPdfBusy] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
   // Preserve valid user choices when the owner changes the listino; replace removed options.
   const resolvedSelection: Selection = {
     woodId: catalog.woods.some(i => i.id === selection.woodId) ? selection.woodId : catalog.woods[0].id,
@@ -33,6 +35,21 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
   const delivery = catalog.deliveries.find(i => i.id === resolvedSelection.deliveryId)!;
   const select = (field: keyof Selection, id: string) => setSelection(current => ({ ...current, [field]: id }));
   const reset = () => { setDimensions(initialDimensions); setSelection(defaultSelection); };
+  const savePdf = async () => {
+    if (!quote || pdfBusy) return;
+    const snapshot = { ...dimensions, ...resolvedSelection };
+    const catalogSnapshot = structuredClone(catalog);
+    setPdfBusy(true);
+    setPdfError(null);
+    try {
+      const { downloadQuote } = await import('./lib/downloadQuote');
+      await downloadQuote(snapshot, catalogSnapshot);
+    } catch {
+      setPdfError('Non riusciamo a creare il PDF. Controlla la connessione e riprova.');
+    } finally {
+      setPdfBusy(false);
+    }
+  };
 
   return <div className="configurator-layout" id="configuratore">
     <div className="configuration">
@@ -116,7 +133,9 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
             <div className="quote-total"><div><span>Il tuo totale</span><small>IVA inclusa</small></div><strong data-testid="total">{formatCurrency(quote.total)}</strong></div>
           </> : <div className="quote-invalid"><Ruler size={28} strokeWidth={1.3} /><h3>Un piccolo controllo alle misure</h3><p>Correggi i campi indicati per visualizzare il tuo preventivo.</p></div>}
         </div>
-        <button className="print-button" disabled={!quote} onClick={() => window.print()}><Printer size={16} /> Stampa il preventivo <ArrowRight size={16} /></button>
+        <button className="print-button" disabled={!quote || pdfBusy} aria-busy={pdfBusy} onClick={savePdf}>{pdfBusy ? <LoaderCircle className="spin" size={18} /> : <Download size={18} />} {pdfBusy ? 'Creo il PDF…' : 'Scarica il preventivo'} <ArrowRight size={16} /></button>
+        {pdfError && <p className="pdf-error" role="alert">{pdfError}</p>}
+        <div className="quote-secondary-actions"><span>PDF A4 · Creato sul tuo dispositivo</span><button className="secondary-print" disabled={!quote} onClick={() => window.print()}><Printer size={14} /> Stampa</button></div>
         <p className="quote-footnote">Un primo passo verso il tuo mobile.<br />Il preventivo è indicativo e non costituisce un ordine.</p>
       </section>
       <div className="sidebar-trust"><ShieldCheck size={17} /><span>Nessuna registrazione. Nessun impegno.</span></div>

@@ -1,0 +1,158 @@
+/* Shared reading scale and softer geometry for both appearances. */
+@media screen {
+  :root { --radius-field: 12px; --radius-option: 16px; --radius-preview: 20px; }
+  .configuration { container-type: inline-size; }
+  .brand small { font-size: 10px; letter-spacing: 1.8px; }
+  .header-inner nav { font-size: 14px; }
+  .header-note { font-size: 13px; }
+  .header-inner .theme-switcher button { font-size: 12px; min-height: 38px; }
+  .hero-description { font-size: 16px; line-height: 1.8; }
+  .eyebrow { font-size: 12px; letter-spacing: 1.5px; }
+  .config-intro .eyebrow { font-size: 11px; letter-spacing: 1.1px; }
+  .intro-bar { font-size: 14px; line-height: 1.65; gap: 18px; }
+  .intro-bar a { font-size: 13px; white-space: nowrap; }
+  .text-button { font-size: 13px; min-height: 38px; }
+  .config-intro { gap: 16px; }
+  .step-number { font-size: 12px; width: 31px; height: 31px; }
+  .section-heading h2 { font-size: 26px; }
+  .section-description { font-size: 14px; margin-left: 43px; line-height: 1.7; }
+  .dimension-field label { font-size: 14px; margin-bottom: 10px; }
+  .input-shell { height: 56px; border-radius: var(--radius-field); }
+  .input-shell input { font-size: 20px; padding-left: 16px; }
+  .input-shell > span { font-size: 13px; }
+  .field-hint { font-size: 12px; gap: 8px; line-height: 1.7; }
+  .field-error { font-size: 13px; line-height: 1.6; }
+  .wood-option { border-radius: 14px; padding: 8px 7px 12px; }
+  .wood-swatch { border-radius: 9px; height: 80px; }
+  .wood-name { font-size: 14px; line-height: 1.5; margin-top: 11px; }
+  .wood-price { font-size: 12px; line-height: 1.6; }
+  .wood-price small { font-size: 11px; }
+  .material-note { font-size: 13px; align-items: flex-start; gap: 8px; line-height: 1.7; }
+  .material-note > svg { margin-top: 3px; }
+  .net-price-note { font-size: 12px; }
+  .finish-options { gap: 14px; }
+  .finish-option { display: grid; grid-template-columns: 15px minmax(0, 1fr); align-items: start; gap: 9px 11px; min-height: 144px; padding: 18px; border-radius: var(--radius-option); }
+  .radio-indicator { width: 15px; height: 15px; margin-top: 3px; }
+  .selected .radio-indicator:after { width: 7px; height: 7px; }
+  .finish-option > span:nth-of-type(2) { max-width: none; }
+  .finish-option strong { font-size: 15px; line-height: 1.55; }
+  .finish-option small { font-size: 13px; line-height: 1.6; margin-top: 5px; }
+  .finish-option .option-price { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 8px; margin: 0; padding: 0; text-align: left; font-size: 14px; white-space: normal; line-height: 1.5; }
+  .finish-option .option-price small { display: inline; font-size: 12px; margin: 1px 0 0; }
+  .delivery-options { gap: 13px; }
+  .delivery-option { border-radius: var(--radius-option); padding: 22px 12px 18px; min-height: 150px; text-align: center; }
+  .delivery-option strong { font-size: 14px; line-height: 1.55; }
+  .delivery-option > span { font-size: 15px; line-height: 1.6; }
+  .delivery-option small { font-size: 12px; line-height: 1.6; }
+  .delivery-option > svg { width: 25px; height: 25px; }
+  .delivery-option .delivery-check { width: 15px; height: 15px; top: 11px; right: 11px; }
+  .privacy-note { font-size: 12px; line-height: 1.7; align-items: flex-start; }
+  .privacy-note svg { margin-top: 3px; }
+  .preview-panel { border-radius: var(--radius-preview) var(--radius-preview) 0 0; }
+  .preview-topline { padding: 22px 24px 0; }
+  .preview-topline .eyebrow { font-size: 10px; letter-spacing: 1px; }
+  .preview-label { font-size: 11px; }
+  .preview-caption { padding: 0 24px 22px; font-size: 12px; flex-wrap: wrap; line-height: 1.7; }
+  .preview-caption small { font-size: 11px; }
+  .quote-panel { border-radius: 0 0 var(--radius-preview) var(--radius-preview); padding: 28px; }
+  .quote-title { flex-wrap: wrap; gap: 10px; }
+  .quote-title h2 { font-size: 28px; }
+  .quote-title > span { font-size: 11px; }
+  .quote-details > div, .quote-subtotals > div { font-size: 14px; line-height: 1.7; align-items: flex-start; }
+  .quote-details strong, .quote-subtotals strong { font-size: 14px; }
+  .formula-note { font-size: 12px; line-height: 1.7; }
+  .quote-total > div > span { font-size: 15px; }
+  .quote-total small { font-size: 12px; }
+  .quote-total > strong { font-size: clamp(29px, 2.7vw, 38px); }
+  .print-button { border-radius: 12px; min-height: 49px; padding: 10px 14px; font-size: 14px; line-height: 1.5; }
+  .quote-secondary-actions { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; margin-top: 13px; color: #c2cfb7; font-size: 11px; line-height: 1.7; }
+  .secondary-print { display: flex; align-items: center; gap: 6px; background: transparent; color: inherit; padding: 6px 0; border: 0; font-size: 12px; min-height: 36px; }
+  .secondary-print:hover { color: #f1f5e8; text-decoration: underline; }
+  .secondary-print:disabled { opacity: .5; }
+  .pdf-error { margin-top: 12px; font-size: 13px; line-height: 1.7; color: #ffd2bf; }
+  .quote-footnote { font-size: 12px; line-height: 1.7; margin-top: 18px; }
+  .quote-invalid p { font-size: 14px; }
+  .sidebar-trust { font-size: 12px; line-height: 1.7; text-align: center; }
+  .refresh-button { font-size: 12px; }
+  .closing-note h2 { font-size: 24px; }
+  .closing-note p { font-size: 14px; line-height: 1.7; }
+  .site-footer { font-size: 13px; flex-wrap: wrap; }
+  .site-footer > span > span, .site-footer small, .site-footer button { font-size: 12px; line-height: 1.7; }
+  .info-dialog { border-radius: 20px; }
+  .info-dialog .eyebrow { font-size: 11px; }
+  .info-dialog li { font-size: 15px; line-height: 1.75; }
+  .info-dialog > p { font-size: 14px; line-height: 1.8; }
+  .info-dialog .educational-note { font-size: 12px; }
+  .primary-button { font-size: 14px; min-height: 46px; border-radius: 12px; }
+  .demo-notice { font-size: 13px; line-height: 1.7; border-radius: 12px; }
+  .mobile-total small { font-size: 12px; }
+  .mobile-total > span:last-child { font-size: 13px; }
+}
+@media print { .quote-secondary-actions, .pdf-error { display: none !important; } }
+@container (max-width: 580px) {
+  .finish-options { grid-template-columns: minmax(0, 1fr); }
+  .finish-option { min-height: 124px; }
+  .net-price-note { display: none; }
+}
+@media screen and (max-width: 1100px) {
+  .wood-options { gap: 7px; }
+  .wood-price small { display: block; margin-left: 0; }
+  .quote-panel { padding: 24px; }
+  .quote-total { flex-wrap: wrap; gap: 14px; }
+}
+@media screen and (min-width: 521px) and (max-width: 800px) {
+  .preview-panel { border-radius: 20px 0 0 20px; }
+  .quote-panel { border-radius: 0 20px 20px 0; }
+  .preview-topline { padding: 22px 20px 0; }
+  .preview-topline .eyebrow { font-size: 10px; }
+}
+@media screen and (max-width: 620px) {
+  .brand small { font-size: 9px; letter-spacing: 1.2px; }
+  .header-inner .theme-switcher button { min-width: 40px; min-height: 40px; }
+  .hero-description { font-size: 15px; }
+  .hero .eyebrow { font-size: 11px; }
+  .intro-bar { align-items: flex-start; font-size: 12px; gap: 12px; }
+  .intro-bar > span { max-width: none; gap: 7px; }
+  .intro-bar a { font-size: 12px; gap: 6px; align-self: center; }
+  .config-intro { flex-wrap: wrap; gap: 4px 12px; margin-bottom: 25px; }
+  .config-intro .eyebrow { font-size: 10px; letter-spacing: 1px; }
+  .reset-button { font-size: 12px; }
+  .section-heading h2 { font-size: 24px; }
+  .section-description { font-size: 14px; margin-left: 40px; }
+  .dimension-inputs { gap: 10px; }
+  .dimension-field label { font-size: 13px; }
+  .input-shell input { font-size: 19px; padding: 12px 9px; }
+  .input-shell > span { font-size: 12px; padding-right: 9px; }
+  .wood-options { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .wood-swatch { height: 78px; }
+  .wood-name { font-size: 14px; }
+  .wood-price { font-size: 12px; }
+  .wood-price small { font-size: 11px; }
+  .material-note { font-size: 13px; }
+  .delivery-options { gap: 8px; }
+  .delivery-option { padding: 22px 8px 16px; min-height: 159px; }
+  .delivery-option strong { font-size: 13px; min-height: 40px; display: flex; align-items: center; }
+  .delivery-option > span { font-size: 14px; }
+  .delivery-option small { font-size: 11px; }
+  .privacy-note { font-size: 12px; }
+  .preview-topline { flex-wrap: wrap; gap: 8px 16px; }
+  .quote-title h2 { font-size: 28px; }
+  .quote-total > strong { font-size: 36px; }
+  .closing-note h2 { font-size: 21px; }
+  .closing-note p { font-size: 13px; }
+  .site-footer > span { font-size: 15px; }
+  .info-dialog .eyebrow { font-size: 10px; }
+  body { padding-bottom: 91px; }
+  .mobile-total { padding-top: 14px; padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+}
+@media screen and (max-width: 360px) {
+  .brand small { font-size: 8px; letter-spacing: .7px; }
+  .dimension-inputs { gap: 7px; }
+  .dimension-field label { font-size: 12px; }
+  .input-shell input { font-size: 18px; padding-left: 8px; }
+  .input-shell > span { font-size: 11px; padding-right: 7px; }
+  .wood-options { gap: 8px; }
+  .quote-panel { padding: 22px; }
+  .intro-bar { flex-wrap: wrap; }
+  .mobile-total > span:last-child { font-size: 12px; }
+}
