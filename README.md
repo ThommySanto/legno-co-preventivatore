@@ -2,6 +2,8 @@
 
 Applicazione React e TypeScript per configurare mobili su misura. Supabase conserva soltanto il catalogo pubblico. Vercel pubblica il frontend statico. Azienda, nominativi e dati sono inventati per un progetto didattico.
 
+[Apri l’applicazione online](https://legno-co-preventivatore.vercel.app).
+
 ## Avvio
 
 Richiede Node 22.12 o successivo.
@@ -83,9 +85,11 @@ Non caricare mai `.env.local`, `node_modules` o la cartella `.vercel`. Nessun se
 
 Il selettore «Chiaro / Scuro» nell'intestazione cambia l'aspetto senza azzerare il preventivo. Il tema chiaro originale resta predefinito; il tema scuro usa verde bosco, testo avorio e accenti lime. La sola preferenza del tema viene salvata sul dispositivo con la chiave `legno-co:theme:v1`, senza inviarla a servizi esterni. Se il browser impedisce il salvataggio, il selettore continua a funzionare nella pagina aperta. La stampa resta chiara in entrambi i temi.
 
-Le misure e le scelte vivono esclusivamente nello stato React, non sono salvate in localStorage, cookie, URL, database o log applicativi. Le sole richieste del frontend recuperano il catalogo. Non è incluso alcun servizio di analisi o tracciamento. I normali servizi di hosting e database gestiscono i propri log delle richieste HTTP.
+Le misure e le scelte vivono esclusivamente nello stato React, non sono salvate in localStorage, cookie, URL, database o log applicativi. Il frontend recupera il catalogo e, per generare il PDF, i caratteri locali del sito. Nessuna richiesta contiene i dati del preventivo. Non è incluso alcun servizio di analisi o tracciamento. I normali servizi di hosting e database gestiscono i propri log delle richieste HTTP.
 
-La stampa avviene nel browser e non carica dati a servizi esterni. Il disegno è illustrativo; il modello di prezzo considera tutti i sei lati del parallelepipedo e non simula la costruzione effettiva delle mensole.
+«Scarica il preventivo» genera un PDF A4 sul dispositivo con logo, data italiana, anteprima indicativa, configurazione, misure, voci di costo e IVA separata. I caratteri del documento sono caricati dalla stessa origine del sito. La libreria PDF viene caricata soltanto quando serve. Il documento conserva la configurazione presente al momento del clic e resta chiaro anche se il sito è in tema scuro. I nomi lunghi vanno a capo e, se necessario, il riepilogo continua su una seconda pagina. Il pulsante «Stampa» conserva la stampa diretta del browser.
+
+La generazione PDF e la stampa non caricano misure o scelte a servizi esterni. Il disegno è illustrativo; il modello di prezzo considera tutti i sei lati del parallelepipedo e non simula la costruzione effettiva delle mensole.
 
 ## Fonti
 
