@@ -17,6 +17,7 @@ L'utente ha confermato di includere anche la lezione 4: sviluppo, verifiche e pu
 - Catalogo pubblico in sola lettura su Supabase, aggiornabile dal titolare nel Table Editor. File JSON separato per anteprima locale e dati iniziali.
 - In modalità Supabase gli errori impediscono il preventivo; nessun ripiego silenzioso sul listino locale.
 - Le misure e le scelte non sono inviate, salvate in storage, registrate o incluse in URL.
+- Conservare entrambi i temi, chiaro e scuro, con selettore accessibile nell'intestazione. Il tema chiaro resta predefinito. Si può salvare soltanto la preferenza del tema nel browser, con chiave legno-co:theme:v1; nessun dato del preventivo va salvato.
 - Mai inserire segreti nel repository. Le sole credenziali client sono URL e chiave pubblicabile in variabili d'ambiente. Vietate chiavi secret/service_role.
 
 ## Flusso di lavoro

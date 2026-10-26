@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import { ArrowDown, ArrowLeft, ArrowRight, Check, ChevronDown, CircleHelp, Leaf, LoaderCircle, LockKeyhole, PackageCheck, Printer, RefreshCw, RotateCcw, Ruler, ShieldCheck, Sparkles, Truck, X } from 'lucide-react';
 import FurniturePreview from './components/FurniturePreview';
+import ThemeSwitcher from './components/ThemeSwitcher';
 import { useCatalog } from './hooks/useCatalog';
 import type { Catalog } from './lib/catalog';
 import { getCatalogMode } from './lib/loadCatalog';
@@ -140,7 +141,7 @@ export default function App() {
     <a href="#configuratore" className="skip-link">Vai al configuratore</a>
     <header className="site-header"><div className="header-inner">
       <a className="brand" href="#" aria-label="Legno e Co. Inizio"><span className="brand-mark" aria-hidden="true"><span /><i /><i /><i /></span><span>legno<span className="brand-amp">&</span>co<span className="brand-dot">.</span><small>FALEGNAMERIA SU MISURA</small></span></a>
-      <nav aria-label="Navigazione principale"><button onClick={() => dialog.current?.showModal()}>Come funziona <ChevronDown size={14} /></button><span className="nav-divider" /><span className="header-note"><Leaf size={17} strokeWidth={1.5} /> Fatto di legno. Pensato per te.</span></nav>
+      <nav aria-label="Navigazione principale"><button className="how-it-works" aria-label="Come funziona" onClick={() => dialog.current?.showModal()}><span>Come funziona</span><ChevronDown className="how-chevron" size={14} /><CircleHelp className="how-mobile-icon" size={18} /></button><span className="nav-divider" /><span className="header-note"><Leaf size={17} strokeWidth={1.5} /> Fatto di legno. Pensato per te.</span><ThemeSwitcher /></nav>
     </div></header>
 
     <main className="page-container">

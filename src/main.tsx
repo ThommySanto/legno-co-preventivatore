@@ -7,5 +7,6 @@ import '@fontsource/inter/latin-600.css';
 import '@fontsource/lora/latin-400.css';
 import '@fontsource/lora/latin-400-italic.css';
 import './styles.css';
+import './themes.css';
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
