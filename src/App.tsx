@@ -102,7 +102,7 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
         <div className="preview-caption"><span><i style={{ backgroundColor: wood.color }} />{wood.name}<span className="caption-divider">/</span>{finish.name}</span><small>Illustrazione indicativa</small></div>
       </div>
 
-      <section className="quote-panel" aria-labelledby="quote-heading">
+      <section className="quote-panel" id="riepilogo" aria-labelledby="quote-heading">
         <div className="quote-title"><h2 id="quote-heading">Il tuo preventivo</h2><span><span className="live-dot" /> In tempo reale</span></div>
         <div aria-live="polite" aria-atomic="true" data-testid="quote-result">
           {quote ? <>
@@ -122,6 +122,7 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
       <button className="text-button refresh-button" onClick={refresh}><RefreshCw size={12} /> Aggiorna il listino</button>
       <div className="print-only"><h2>Configurazione del mobile</h2><p>Larghezza: {dimensions.width} cm · Altezza: {dimensions.height} cm · Profondità: {dimensions.depth} cm</p><p>Legno: {wood.name} · Finitura: {finish.name} · Consegna: {delivery.name}</p><p>Listino {catalog.version} · {new Intl.DateTimeFormat('it-IT', { timeZone: 'Europe/Rome' }).format(new Date())}</p></div>
     </aside>
+    {quote && <a className="mobile-total" href="#riepilogo"><span><small>Il tuo totale · IVA inclusa</small><strong>{formatCurrency(quote.total)}</strong></span><span>Vedi dettagli <ArrowDown size={15} /></span></a>}
   </div>;
 }
 
