@@ -10,6 +10,21 @@ vi.mock('../src/lib/loadCatalog', () => ({ loadCatalog: vi.fn(), getCatalogMode:
 beforeEach(() => vi.mocked(loadCatalog).mockReset().mockResolvedValue(parseCatalog(rawCatalog)));
 
 describe('Configuratore cliente', () => {
+  it('cambia tema conservando misure e totale e salva solo la preferenza di aspetto', async () => {
+    const user = userEvent.setup();
+    localStorage.clear();
+    render(<App />);
+    await screen.findByTestId('total');
+    fireEvent.change(screen.getByLabelText('Larghezza'), { target: { value: '150' } });
+    const total = screen.getByTestId('total').textContent;
+    await user.click(screen.getByRole('button', { name: 'Tema scuro' }));
+    expect(screen.getByLabelText('Larghezza')).toHaveValue('150');
+    expect(screen.getByTestId('total').textContent).toBe(total);
+    expect(Object.keys(localStorage)).toEqual(['legno-co:theme:v1']);
+    expect(loadCatalog).toHaveBeenCalledTimes(1);
+    await user.click(screen.getByRole('button', { name: 'Tema chiaro' }));
+    localStorage.clear();
+  });
   it('mostra C1 e aggiorna il totale selezionando un altro legno', async () => {
     const user = userEvent.setup();
     render(<App />);

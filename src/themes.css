@@ -1,0 +1,154 @@
+/* The existing light palette remains the default. These controls work in both themes. */
+:root { color-scheme: light; }
+.header-inner .how-mobile-icon { display: none; }
+.theme-switcher { display: flex; align-items: center; padding: 4px; gap: 2px; border: 1px solid #dce2d3; border-radius: 25px; background: #eeefe7; }
+.header-inner .theme-switcher button { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 12px; border-radius: 20px; color: #67765e; font-size: 10px; min-height: 34px; }
+.header-inner .theme-switcher button[aria-pressed="true"] { background: #fffefa; color: #2f493e; box-shadow: 0 1px 4px #273b3014; }
+.header-inner .theme-switcher button:hover { color: #293b32; }
+
+@media screen {
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    color: #eff2e8;
+    background: #111715;
+    --green: #cde59c;
+    --muted: #a8b3a3;
+    --line: #303d34;
+    --paper: #1a241e;
+    --dark-text: #eff2e8;
+    --dark-muted: #a8b3a3;
+    --dark-accent: #cde59c;
+    --dark-selected: #253323;
+    --dark-border: #394a3b;
+    --preview-label: #b6c3aa;
+    --preview-line: #839779;
+  }
+  [data-theme="dark"] .site-header { background: #111715; }
+  [data-theme="dark"] .brand-dot,
+  [data-theme="dark"] .hero h1 em { color: var(--dark-accent); }
+  [data-theme="dark"] .eyebrow,
+  [data-theme="dark"] .hero-seal,
+  [data-theme="dark"] .intro-bar { color: #b4c29f; }
+  [data-theme="dark"] .eyebrow-line { background: #a1b68a; }
+  [data-theme="dark"] .header-note,
+  [data-theme="dark"] .hero-description,
+  [data-theme="dark"] .text-button,
+  [data-theme="dark"] .section-description,
+  [data-theme="dark"] .heading-icon,
+  [data-theme="dark"] .field-hint,
+  [data-theme="dark"] .input-shell > span,
+  [data-theme="dark"] .wood-price,
+  [data-theme="dark"] .material-note,
+  [data-theme="dark"] .net-price-note,
+  [data-theme="dark"] .finish-option small,
+  [data-theme="dark"] .delivery-option small,
+  [data-theme="dark"] .privacy-note,
+  [data-theme="dark"] .sidebar-trust,
+  [data-theme="dark"] .refresh-button,
+  [data-theme="dark"] .closing-note p,
+  [data-theme="dark"] .site-footer,
+  [data-theme="dark"] .site-footer small,
+  [data-theme="dark"] .site-footer > span > span,
+  [data-theme="dark"] .site-footer button,
+  [data-theme="dark"] .dialog-close,
+  [data-theme="dark"] .info-dialog ol,
+  [data-theme="dark"] .info-dialog > p,
+  [data-theme="dark"] .info-dialog .educational-note { color: var(--dark-muted); }
+  [data-theme="dark"] .nav-divider { background: var(--line); }
+  [data-theme="dark"] .theme-switcher { background: #1a241e; border-color: #3a4839; }
+  [data-theme="dark"] .header-inner .theme-switcher button { color: #b4c0a8; }
+  [data-theme="dark"] .header-inner .theme-switcher button[aria-pressed="true"] { background: var(--dark-accent); color: #1a291b; box-shadow: none; }
+  [data-theme="dark"] .header-inner .theme-switcher button:not([aria-pressed="true"]):hover { background: #2a382b; color: #eff2e8; }
+  [data-theme="dark"] button:focus-visible,
+  [data-theme="dark"] a:focus-visible,
+  [data-theme="dark"] .wood-option:has(input:focus-visible),
+  [data-theme="dark"] .finish-option:has(input:focus-visible),
+  [data-theme="dark"] .delivery-option:has(input:focus-visible) { outline-color: var(--dark-accent); }
+  [data-theme="dark"] .step-number { background: #1c281f; border-color: #45553e; color: #c1d2af; }
+  [data-theme="dark"] .input-shell { border-color: #46533f; }
+  [data-theme="dark"] .input-shell input { color: var(--dark-text); }
+  [data-theme="dark"] .input-shell:focus-within { border-color: var(--dark-accent); box-shadow: 0 0 0 3px #cde59c15; }
+  [data-theme="dark"] .input-shell.invalid { border-color: #d68b71; background: #2b201b; }
+  [data-theme="dark"] .field-error { color: #ffb59c; }
+  [data-theme="dark"] .wood-option:hover { background: #1f2b21; }
+  [data-theme="dark"] .wood-option.selected { background: var(--dark-selected); border-color: #9db97a; }
+  [data-theme="dark"] .swatch-check { background: var(--dark-accent); border-color: #273c27; color: #1a291b; }
+  [data-theme="dark"] .material-note strong,
+  [data-theme="dark"] .option-price,
+  [data-theme="dark"] .delivery-option > span,
+  [data-theme="dark"] .delivery-option > svg,
+  [data-theme="dark"] .delivery-option .delivery-check { color: var(--dark-accent); }
+  [data-theme="dark"] .finish-option,
+  [data-theme="dark"] .delivery-option { background: #18211c; border-color: var(--dark-border); }
+  [data-theme="dark"] .finish-option.selected,
+  [data-theme="dark"] .delivery-option.selected { background: var(--dark-selected); border-color: #9db97a; }
+  [data-theme="dark"] .finish-option:hover,
+  [data-theme="dark"] .delivery-option:hover { border-color: #9db97a; }
+  [data-theme="dark"] .radio-indicator { border-color: #879a77; }
+  [data-theme="dark"] .selected .radio-indicator { border-color: var(--dark-accent); }
+  [data-theme="dark"] .selected .radio-indicator:after { background: var(--dark-accent); }
+  [data-theme="dark"] .preview-panel { background: #1c2820; background-image: radial-gradient(ellipse at 45% 45%, #33432b45 0, transparent 75%); border-color: #364634; }
+  [data-theme="dark"] .preview-label,
+  [data-theme="dark"] .preview-caption > span,
+  [data-theme="dark"] .preview-caption small { color: #afbea1; }
+  [data-theme="dark"] .preview-label > span { background: var(--dark-accent); }
+  [data-theme="dark"] .caption-divider { color: #7f9674; }
+  [data-theme="dark"] .quote-panel { background: #202f25; color: var(--dark-text); box-shadow: inset 0 0 0 1px #40513c; }
+  [data-theme="dark"] .quote-title > span,
+  [data-theme="dark"] .quote-details > div,
+  [data-theme="dark"] .quote-subtotals > div,
+  [data-theme="dark"] .inline-info,
+  [data-theme="dark"] .formula-note,
+  [data-theme="dark"] .quote-total small,
+  [data-theme="dark"] .quote-footnote,
+  [data-theme="dark"] .quote-invalid { color: #b6c5a9; }
+  [data-theme="dark"] .quote-details strong,
+  [data-theme="dark"] .quote-subtotals strong,
+  [data-theme="dark"] .quote-invalid h3 { color: var(--dark-text); }
+  [data-theme="dark"] .quote-total > strong { color: #def2b5; }
+  [data-theme="dark"] .quote-subtotals,
+  [data-theme="dark"] .quote-total { border-color: #52654680; }
+  [data-theme="dark"] .live-dot { background: #d5ed9e; }
+  [data-theme="dark"] .print-button,
+  [data-theme="dark"] .primary-button { color: #1b2b1c; background: var(--dark-accent); border-color: #d4ed9c; }
+  [data-theme="dark"] .print-button:hover,
+  [data-theme="dark"] .primary-button:hover { background: #dfefbe; }
+  [data-theme="dark"] .closing-icon { background: #213020; border-color: #41503b; color: #bdd49e; }
+  [data-theme="dark"] .closing-lines { color: #42543b; }
+  [data-theme="dark"] .info-dialog { background: #18221c; border-color: #45553e; color: var(--dark-text); }
+  [data-theme="dark"] .info-dialog::backdrop { background: #070b09bc; }
+  [data-theme="dark"] .info-dialog .dialog-privacy { border-color: var(--line); }
+  [data-theme="dark"] .info-dialog li strong { color: #d9e8c5; }
+  [data-theme="dark"] .demo-notice { background: #302d1f; color: #dfd0a5; }
+  [data-theme="dark"] .skip-link { color: #1b2b1c; }
+  [data-theme="dark"] .mobile-total { background: #17231df5; border-color: #42543b; box-shadow: 0 -5px 25px #00000024; }
+  [data-theme="dark"] .mobile-total small { color: #b6c5a9; }
+}
+
+@media (max-width: 1100px) {
+  .header-inner nav { gap: 18px; }
+  .header-note { display: none; }
+}
+@media (max-width: 620px) {
+  .header-inner nav { gap: 10px; }
+  .header-inner .theme-switcher button { min-width: 38px; min-height: 38px; padding: 9px; }
+  .theme-switcher { padding: 3px; gap: 1px; }
+  .theme-switcher button span,
+  .how-it-works > span,
+  .header-inner .how-chevron { display: none; }
+  .header-inner .how-mobile-icon { display: block; }
+  .header-inner .how-it-works { justify-content: center; min-width: 30px; min-height: 44px; }
+}
+@media (max-width: 360px) {
+  .header-inner { padding-left: 16px; padding-right: 16px; }
+  .brand { font-size: 25px; gap: 6px; }
+  .brand small { font-size: 6px; letter-spacing: 1px; }
+  .header-inner nav { gap: 5px; }
+}
+@media (pointer: coarse) {
+  .header-inner .theme-switcher button { min-width: 40px; min-height: 40px; }
+}
+@media print {
+  :root { color-scheme: light !important; background: white !important; }
+  .theme-switcher { display: none !important; }
+}

@@ -28,7 +28,7 @@ export default function FurniturePreview({ dimensions, color, name, valid }: {
       <linearGradient id={`${id}-inside`} x1="0" y1="0" x2="0" y2="1"><stop stopColor="#29221b" stopOpacity=".47" /><stop offset="1" stopColor="#29221b" stopOpacity=".11" /></linearGradient>
       <pattern id={`${id}-grain`} width="31" height="135" patternUnits="userSpaceOnUse"><path d="M3 0Q14 30 5 70T6 135M17 0Q9 38 19 82T17 135M28 0Q20 46 29 104" fill="none" stroke="#3e2919" strokeOpacity=".14" strokeWidth=".7" /></pattern>
       <filter id={`${id}-shadow`} x="-40%" y="-100%" width="180%" height="300%"><feGaussianBlur stdDeviation="10" /></filter>
-      <marker id={`${id}-arrow`} markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse"><path d="M5 0 0 2.5 5 5" fill="none" stroke="#869084" strokeWidth="1" /></marker>
+      <marker id={`${id}-arrow`} markerWidth="5" markerHeight="5" refX="2.5" refY="2.5" orient="auto-start-reverse"><path d="M5 0 0 2.5 5 5" fill="none" stroke="var(--preview-line, #869084)" strokeWidth="1" /></marker>
     </defs>
     <ellipse cx="222" cy={y + height + 17} rx={width * .6 + depth / 2} ry="10" fill="#34352d" opacity=".13" filter={`url(#${id}-shadow)`} />
     <g className="cabinet-art">
@@ -48,13 +48,13 @@ export default function FurniturePreview({ dimensions, color, name, valid }: {
       </g>)}
       <path d={`M${x + edge} ${y + height}v8M${x + width - edge} ${y + height}v8`} stroke={color} strokeWidth={edge * .7} />
     </g>
-    <g fill="none" stroke="#869084" strokeWidth=".8" opacity=".8">
+    <g fill="none" stroke="var(--preview-line, #869084)" strokeWidth=".8" opacity=".8">
       <path d={`M${x} ${y + height + 24}v15m${width} -15v15`} />
       <path d={`M${x + 3} ${y + height + 34}H${x + width - 3}`} markerStart={`url(#${id}-arrow)`} markerEnd={`url(#${id}-arrow)`} />
       <path d={`M${x - 23} ${y}h-13m13 ${height}h-13`} />
       <path d={`M${x - 31} ${y + 3}v${height - 6}`} markerStart={`url(#${id}-arrow)`} markerEnd={`url(#${id}-arrow)`} />
     </g>
-    <g fill="#60695d" fontSize="11" fontFamily="Arial, sans-serif" textAnchor="middle">
+    <g fill="var(--preview-label, #60695d)" fontSize="11" fontFamily="Arial, sans-serif" textAnchor="middle">
       <text x={x + width / 2} y={y + height + 53}>{dimension('width')}</text>
       <text transform={`translate(${x - 43}, ${y + height / 2}) rotate(-90)`}>{dimension('height')}</text>
       <text x={x + width + depth + 8} y={y + height - depth / 4} textAnchor="start" fontSize="10">P {dimension('depth')}</text>
