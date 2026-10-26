@@ -1,22 +1,95 @@
 {
   "version": "2026.1",
   "woods": [
-    { "id": "abete", "name": "Abete", "description": "Chiaro e leggero", "pricePerM2": 85, "color": "#dfc79e" },
-    { "id": "pino", "name": "Pino", "description": "Caldo e naturale", "pricePerM2": 95, "color": "#cfa36c" },
-    { "id": "castagno", "name": "Castagno", "description": "Rustico e materico", "pricePerM2": 160, "color": "#a87649" },
-    { "id": "rovere", "name": "Rovere", "description": "Elegante e senza tempo", "pricePerM2": 180, "color": "#b99465" },
-    { "id": "noce", "name": "Noce", "description": "Intenso e raffinato", "pricePerM2": 240, "color": "#725039" }
+    {
+      "id": "abete",
+      "name": "Abete",
+      "description": "Chiaro e leggero",
+      "pricePerM2": 85,
+      "color": "#dfc79e"
+    },
+    {
+      "id": "pino",
+      "name": "Pino",
+      "description": "Caldo e naturale",
+      "pricePerM2": 95,
+      "color": "#cfa36c"
+    },
+    {
+      "id": "castagno",
+      "name": "Castagno",
+      "description": "Rustico e materico",
+      "pricePerM2": 160,
+      "color": "#a87649"
+    },
+    {
+      "id": "rovere",
+      "name": "Rovere",
+      "description": "Elegante e senza tempo",
+      "pricePerM2": 180,
+      "color": "#b99465"
+    },
+    {
+      "id": "noce",
+      "name": "Noce",
+      "description": "Intenso e raffinato",
+      "pricePerM2": 240,
+      "color": "#725039"
+    }
   ],
   "finishes": [
-    { "id": "grezzo", "name": "Grezzo", "description": "Il legno, nella sua essenza", "pricePerM2": 0 },
-    { "id": "cera-naturale", "name": "Cera naturale", "description": "Protezione leggera, tocco naturale", "pricePerM2": 12 },
-    { "id": "verniciato-opaco", "name": "Verniciato opaco", "description": "Uniforme, discreto e protetto", "pricePerM2": 18 },
-    { "id": "laccato", "name": "Laccato", "description": "Una superficie liscia e coprente", "pricePerM2": 35 }
+    {
+      "id": "grezzo",
+      "name": "Grezzo",
+      "description": "Il legno, nella sua essenza",
+      "pricePerM2": 0
+    },
+    {
+      "id": "cera-naturale",
+      "name": "Cera naturale",
+      "description": "Protezione leggera, tocco naturale",
+      "pricePerM2": 12
+    },
+    {
+      "id": "verniciato-opaco",
+      "name": "Verniciato opaco",
+      "description": "Uniforme, discreto e protetto",
+      "pricePerM2": 18
+    },
+    {
+      "id": "laccato",
+      "name": "Laccato",
+      "description": "Una superficie liscia e coprente",
+      "pricePerM2": 35
+    }
   ],
   "deliveries": [
-    { "id": "ritiro", "name": "Ritiro in sede", "description": "Vieni a ritirare il tuo mobile", "price": 0 },
-    { "id": "entro-50-km", "name": "Entro 50 km", "description": "Consegna nella tua zona", "price": 60 },
-    { "id": "oltre-50-km", "name": "Oltre 50 km", "description": "Per le destinazioni più lontane", "price": 120 }
+    {
+      "id": "ritiro",
+      "name": "Ritiro in sede",
+      "description": "Vieni a ritirare il tuo mobile",
+      "price": 0
+    },
+    {
+      "id": "entro-50-km",
+      "name": "Entro 50 km",
+      "description": "Consegna nella tua zona",
+      "price": 60
+    },
+    {
+      "id": "oltre-50-km",
+      "name": "Oltre 50 km",
+      "description": "Per le destinazioni più lontane",
+      "price": 120
+    }
   ],
-  "settings": { "vatRate": 0.22, "minDimensionCm": 30, "maxDimensionCm": 300 }
+  "settings": {
+    "vatRate": 0.22,
+    "minDimensionCm": 30,
+    "maxDimensionCm": 300,
+    "shelfThicknessCm": 2,
+    "maxShelves": 12
+  },
+  "revision": 0,
+  "updatedAt": null
 }

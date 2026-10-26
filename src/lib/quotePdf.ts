@@ -38,12 +38,12 @@ function drawFurniture(page: PDFPage, x: number, top: number, input: QuoteInput,
   const l = parseDimension(input.width)!.toNumber();
   const h = parseDimension(input.height)!.toNumber();
   const p = parseDimension(input.depth)!.toNumber();
-  const scale = Math.min(147 / l, 106 / h);
+  const scale = Math.min(147 / l, 78 / h);
   const w = l * scale;
   const tall = h * scale;
   const d = Math.min(32, p * scale * .5);
   const left = x + (190 - w - d) / 2;
-  const frontTop = top + (118 - tall) / 2 + d / 3;
+  const frontTop = top + (90 - tall) / 2 + d / 4;
   const wood = hex(woodColor);
   const side = rgb(wood.red * .76, wood.green * .76, wood.blue * .76);
   const inside = rgb(wood.red * .8, wood.green * .8, wood.blue * .8);
@@ -53,7 +53,8 @@ function drawFurniture(page: PDFPage, x: number, top: number, input: QuoteInput,
   page.drawRectangle({ x: left, y: height - frontTop - tall, width: w, height: tall, color: wood });
   const edge = Math.min(6, w * .08);
   page.drawRectangle({ x: left + edge, y: height - frontTop - tall + edge, width: w - edge * 2, height: tall - edge * 2, color: inside });
-  for (const ratio of [1 / 3, 2 / 3]) page.drawRectangle({ x: left + edge, y: height - frontTop - tall * ratio, width: w - edge * 2, height: edge * .6, color: wood });
+  const count = input.shelfCount ?? 0;
+  for (let i = 1; i <= count; i++) page.drawRectangle({ x: left + edge, y: height - frontTop - tall * i / (count + 1), width: w - edge * 2, height: Math.min(edge * .6, tall / (count + 1) / 3), color: wood });
   for (let i = 1; i < Math.min(30, Math.floor(w / 7)); i++) page.drawLine({ start: { x: left + i * 7, y: height - frontTop }, end: { x: left + i * 7 + 1, y: height - frontTop - tall }, thickness: .45, color: side, opacity: .13 });
 }
 
@@ -120,7 +121,7 @@ export async function createQuotePdf(input: QuoteInput, catalog: Catalog, fontBy
   text('Il tuo mobile,', margin, cursor, 30, semibold);
   text('messo nero su bianco.', margin, cursor + 39, 27, italic, hex('#738265'));
   text('Le tue scelte, tutti i dettagli, un prezzo chiaro.', margin, cursor + 81, 10.5, regular, muted);
-  cursor = 215;
+  cursor = 200;
 
   const details = [
     { label: 'LEGNO', value: quote.wood.name },
@@ -129,7 +130,7 @@ export async function createQuotePdf(input: QuoteInput, catalog: Catalog, fontBy
   ];
   const detailWidth = contentWidth - 257;
   const detailHeight = details.reduce((height, item) => height + 24 + wrap(item.value, semibold, 10.5, detailWidth).length * 14, 0);
-  const configHeight = Math.max(160, detailHeight + 24);
+  const configHeight = Math.max(136, detailHeight + 18);
   panel(cursor, configHeight, pale);
   drawFurniture(page!, margin + 8, cursor + 14, input, quote.wood.color);
   text('ANTEPRIMA INDICATIVA', margin + 34, cursor + configHeight - 22, 7.5, regular, muted);
@@ -138,26 +139,28 @@ export async function createQuotePdf(input: QuoteInput, catalog: Catalog, fontBy
     text(item.label, margin + 235, detailTop, 7.5, semibold, muted);
     detailTop = paragraph(item.value, margin + 235, detailTop + 14, detailWidth, 10.5, semibold, ink, 14) + 10;
   }
-  cursor += configHeight + 17;
+  cursor += configHeight + 15;
   const measures = [
     ['LARGHEZZA', `${formatNumber(parseDimension(input.width)!.toNumber(), 6)} cm`],
     ['ALTEZZA', `${formatNumber(parseDimension(input.height)!.toNumber(), 6)} cm`],
     ['PROFONDITÀ', `${formatNumber(parseDimension(input.depth)!.toNumber(), 6)} cm`],
-    ['SUPERFICIE', `${formatNumber(quote.area, 4)} m²`],
+    ['SUPERFICIE TOTALE', `${formatNumber(quote.totalArea, 4)} m²`],
   ];
   measures.forEach(([label, value], index) => {
     const x = margin + index * contentWidth / 4;
     text(label, x, cursor, 7.5, semibold, muted);
     text(value, x, cursor + 16, 13.5, semibold);
   });
-  cursor += 62;
+  cursor += 54;
 
   const rows = [
     { title: `Mobile in ${quote.wood.name}`, subtitle: `Finitura ${quote.finish.name} · ${formatCurrency(quote.wood.pricePerM2 + quote.finish.pricePerM2)}/m²`, quantity: `${formatNumber(quote.area, 4)} m²`, amount: quote.furniture },
+    { title: `Ripiani interni (${quote.shelves.count})`, subtitle: quote.shelves.count > 0 ? `${formatNumber(quote.shelves.width, 4)} × ${formatNumber(quote.shelves.depth, 4)} cm · spessore ${formatNumber(quote.shelves.thickness, 4)} cm · facce e bordi inclusi` : 'Nessun ripiano aggiunto', quantity: `${formatNumber(quote.shelves.area, 4)} m²`, amount: quote.shelves.amount },
+    ...(quote.roundingAdjustment !== 0 ? [{ title: 'Arrotondamento', subtitle: 'Allineamento degli importi al centesimo', quantity: '—', amount: quote.roundingAdjustment }] : []),
     { title: quote.delivery.name, subtitle: 'Costo fisso di consegna', quantity: '1', amount: quote.delivery.price },
   ];
   const rowData = rows.map(row => ({ ...row, titleLines: wrap(row.title, semibold, 10.5, 280), subLines: wrap(row.subtitle, regular, 9, 280) }));
-  const rowHeights = rowData.map(row => row.titleLines.length * 15 + row.subLines.length * 13 + 22);
+  const rowHeights = rowData.map(row => row.titleLines.length * 15 + row.subLines.length * 13 + 16);
   ensureSpace(53 + rowHeights.reduce((a, b) => a + b, 0));
   text('IL PREZZO, VOCE PER VOCE', margin, cursor, 8.5, semibold, muted);
   cursor += 26;

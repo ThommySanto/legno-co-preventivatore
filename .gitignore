@@ -11,3 +11,4 @@ coverage/
 *.tsbuildinfo
 artifacts/
 output/pdf/
+supabase/.temp/

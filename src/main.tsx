@@ -1,4 +1,4 @@
-import { StrictMode } from 'react';
+import { lazy, StrictMode, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import '@fontsource/inter/latin-400.css';
@@ -10,5 +10,7 @@ import './styles.css';
 import './themes.css';
 import './refinements.css';
 import './print.css';
+import './admin.css';
 
-createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
+const AdminPage = lazy(() => import('./components/AdminPage'));
+createRoot(document.getElementById('root')!).render(<StrictMode>{window.location.pathname.replace(/\/$/, '') === '/admin' ? <Suspense fallback={<p role="status" className="admin-loading">Apriamo la bottega…</p>}><AdminPage /></Suspense> : <App />}</StrictMode>);

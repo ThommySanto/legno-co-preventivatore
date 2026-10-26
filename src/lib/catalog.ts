@@ -14,6 +14,8 @@ const uniqueIds = <T extends { id: string }>(items: T[]) =>
 
 export const catalogSchema = z.object({
   version: z.string().min(1),
+  revision: z.number().int().min(0).default(0),
+  updatedAt: z.string().datetime({ offset: true }).nullable().default(null),
   woods: z.array(z.object({
     ...identity,
     pricePerM2: money,
@@ -25,7 +27,9 @@ export const catalogSchema = z.object({
     vatRate: z.number().finite().min(0).max(1),
     minDimensionCm: z.number().finite().positive(),
     maxDimensionCm: z.number().finite().positive().max(100_000),
-  }).refine(s => s.minDimensionCm <= s.maxDimensionCm, 'Limiti delle misure incoerenti.'),
+    shelfThicknessCm: z.number().finite().min(0.1).max(10).default(2),
+    maxShelves: z.number().int().min(0).max(24).default(12),
+  }).refine(s => s.minDimensionCm <= s.maxDimensionCm && s.minDimensionCm > 2 * s.shelfThicknessCm, 'Limiti delle misure incoerenti.'),
 });
 
 export type Catalog = z.infer<typeof catalogSchema>;
