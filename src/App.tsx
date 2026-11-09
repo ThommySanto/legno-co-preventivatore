@@ -6,6 +6,7 @@ import ThemeSwitcher from './components/ThemeSwitcher';
 import QuotePrintView from './components/QuotePrintView';
 import ShelfControl from './components/ShelfControl';
 import Chatbot from './components/Chatbot';
+import ProductCatalog from './components/ProductCatalog';
 import { useCatalog } from './hooks/useCatalog';
 import type { Catalog } from './lib/catalog';
 import { getCatalogMode } from './lib/loadCatalog';
@@ -180,6 +181,7 @@ export default function App() {
         {state.status === 'loading' ? <><LoaderCircle className="spin" size={27} /><h2>Prepariamo il tuo spazio creativo</h2><p>Stiamo aggiornando il listino.</p></> : <><CircleHelp size={28} /><h2>Il listino si fa attendere</h2><p>{state.error}</p><button className="primary-button" onClick={state.refresh}><RefreshCw size={15} /> Riprova</button></>}
       </div>}
       <div hidden={state.status !== 'ready'}>{catalog && <Configurator catalog={catalog} refresh={state.refresh} />}</div>
+      <ProductCatalog />
       <section className="closing-note"><span className="closing-icon"><Leaf size={27} strokeWidth={1} /></span><div><h2>Le cose belle iniziano da un’idea.</h2><p>Un legno da scegliere. Uno spazio da immaginare. Un mobile che parla di te.</p></div><span className="closing-lines" aria-hidden="true">///</span></section>
     </main>
     <footer className="site-footer"><span>legno&co. <span>Il legno incontra le tue idee.</span></span><small>Progetto didattico · Azienda e dati inventati</small><a className="admin-link" href="/admin">Area admin</a><button onClick={() => dialog.current?.showModal()}><CircleHelp size={14} /> Informazioni</button></footer>
