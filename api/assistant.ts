@@ -230,7 +230,7 @@ async function callClaudeWithTools(system: string, initialMessages: ClaudeMessag
     const results = [];
     for (const call of calls) {
       try { results.push({ type: 'tool_result', tool_use_id: call.id, content: await runTool(session, call) }); }
-      catch (error) { results.push({ type: 'tool_result', tool_use_id: call.id, is_error: true, content: error instanceof Error ? `Errore: ${error.message}` : 'Errore strumento' }); }
+      catch (error) { console.error('assistant_tool_failed', call.name, error instanceof Error ? error.message : 'errore strumento'); results.push({ type: 'tool_result', tool_use_id: call.id, is_error: true, content: error instanceof Error ? `Errore: ${error.message}` : 'Errore strumento' }); }
     }
     messages.push({ role: 'user', content: results });
   }
