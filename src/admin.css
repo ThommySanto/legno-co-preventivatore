@@ -20,6 +20,7 @@ body:has(.admin-page) { padding-bottom: 0; }
 .admin-status button { display: flex; align-items: center; gap: 7px; font-size: 14px; min-height: 44px; }
 .admin-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; border: 0; padding: 0; margin: 0; min-width: 0; }
 .admin-card { border: 1px solid var(--admin-line); background: var(--admin-card); padding: 30px; border-radius: 22px; }
+.admin-report-card{margin-bottom:24px}.admin-report-kpis{display:flex;gap:42px}.admin-report-kpis strong{font:400 30px 'Lora',Georgia,serif}.admin-report-kpis small{display:block;font:400 12px Inter,sans-serif;color:var(--admin-muted);margin-top:5px}
 .admin-card h2 { font-size: 13px; font-weight: 400; color: var(--admin-muted); display: flex; gap: 12px; align-items: center; margin: 0 0 10px; }
 .admin-card h2 > span { font-size: 21px; color: var(--admin-ink); font-family: 'Lora', Georgia, serif; }
 .admin-card > p { color: var(--admin-muted); font-size: 14px; line-height: 1.7; margin: 0 0 24px; }

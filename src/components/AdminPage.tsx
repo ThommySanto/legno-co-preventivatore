@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import { ArrowLeft, Check, LoaderCircle, LockKeyhole, LogOut, RefreshCw, Save, ShieldCheck, X } from 'lucide-react';
+import { ArrowLeft, BarChart3, Check, LoaderCircle, LockKeyhole, LogOut, RefreshCw, Save, ShieldCheck, X } from 'lucide-react';
 import ThemeSwitcher from './ThemeSwitcher';
 import type { Catalog } from '../lib/catalog';
 import { createPriceDraft, fetchAdminCatalog, getAdminClient, readPriceDraft, saveAdminCatalog, settingsFields, type PriceDraft } from '../lib/admin';
@@ -68,6 +68,7 @@ export function CatalogEditor({ initialCatalog, signOut }: { initialCatalog: Cat
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [report, setReport] = useState<{ kpi?: { messaggi?: number; sessioni?: number; caratteri_medi?: number } } | null>(null);
   const confirm = useRef<HTMLDialogElement>(null);
   const original = createPriceDraft(catalog);
   const { errors } = readPriceDraft(catalog, draft);
@@ -80,6 +81,7 @@ export function CatalogEditor({ initialCatalog, signOut }: { initialCatalog: Cat
     window.addEventListener('beforeunload', beforeUnload);
     return () => window.removeEventListener('beforeunload', beforeUnload);
   }, [dirty]);
+  useEffect(() => { void getAdminClient().rpc('get_chat_report').then(({ data }) => { if (data) setReport(data as typeof report); }); }, []);
   const accept = (next: Catalog) => { setCatalog(next); setDraft(createPriceDraft(next)); };
   const edit = (key: string, value: string) => { setDraft(current => ({ ...current, [key]: value })); setSuccess(''); setError(''); };
   const reload = async () => {
@@ -104,6 +106,7 @@ export function CatalogEditor({ initialCatalog, signOut }: { initialCatalog: Cat
   return <>
     <div className="admin-title"><div><p className="eyebrow">LA TUA BOTTEGA, SOTTO CONTROLLO</p><h1>Il listino, nelle tue mani.</h1><p>Prezzi chiari, dettagli curati. Ogni modifica aggiorna il preventivatore.</p></div><span className="admin-badge"><ShieldCheck size={18} /> Accesso amministratore</span></div>
     <div className="admin-status"><span>Listino {catalog.version}{catalog.updatedAt && <> · aggiornato il {new Intl.DateTimeFormat('it-IT', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Rome' }).format(new Date(catalog.updatedAt))}</>}</span><button disabled={busy} onClick={reload}><RefreshCw size={16} /> Ricarica listino</button></div>
+    {report?.kpi && <section className="admin-card admin-report-card"><h2><BarChart3 size={17} /> <span>Uso dell’assistente</span></h2><p>Numeri aggregati del chatbot; nessun testo delle conversazioni viene mostrato.</p><div className="admin-report-kpis"><strong>{report.kpi.messaggi ?? 0}<small>messaggi</small></strong><strong>{report.kpi.sessioni ?? 0}<small>sessioni</small></strong><strong>{report.kpi.caratteri_medi ?? 0}<small>caratteri medi</small></strong></div></section>}
     {error && <p className="admin-error admin-notice" role="alert">{error}</p>}{success && <p className="admin-success admin-notice" role="status"><Check size={18} />{success}</p>}
     <form onSubmit={event => { event.preventDefault(); if (valid && dirty && !busy) confirm.current?.showModal(); }}>
       <fieldset disabled={busy} className="admin-grid">
