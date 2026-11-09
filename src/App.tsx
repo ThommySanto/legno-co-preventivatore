@@ -5,6 +5,7 @@ import ModelViewer from './components/ModelViewer';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import QuotePrintView from './components/QuotePrintView';
 import ShelfControl from './components/ShelfControl';
+import Chatbot from './components/Chatbot';
 import { useCatalog } from './hooks/useCatalog';
 import type { Catalog } from './lib/catalog';
 import { getCatalogMode } from './lib/loadCatalog';
@@ -187,5 +188,6 @@ export default function App() {
       <span className="eyebrow">POCHE SCELTE, TUTTO CHIARO</span><h2>Dal tuo spazio<br />al tuo preventivo.</h2><ol><li><strong>Prendi le misure.</strong> Inserisci larghezza, altezza e profondità in centimetri.</li><li><strong>Scegli i dettagli.</strong> Seleziona legno, finitura e modalità di consegna.</li><li><strong>Scopri il prezzo.</strong> Superficie e importi si aggiornano subito, con IVA separata.</li></ol>
       <p>La superficie comprende tutti i sei lati del mobile e i ripiani aggiunti, con entrambe le facce e tutti i bordi. Il prezzo usa il legno e la finitura scelti; si aggiungono la consegna e l’IVA del listino.</p><p>I ripiani hanno larghezza interna pari alla larghezza del mobile meno due spessori e profondità pari alla profondità del mobile meno uno spessore. L’altezza e lo spessore limitano la quantità possibile.</p><p>Imponibile e IVA sono arrotondati al centesimo. L’illustrazione e i vani interni sono indicativi: non rappresentano un progetto esecutivo.</p><p className="dialog-privacy"><LockKeyhole size={18} /> Misure e scelte restano nel browser. Nessun account cliente, nessun dato del preventivo salvato o inviato.</p><p className="educational-note">Legno & Co. è un’azienda inventata per un progetto didattico. Il preventivo non costituisce un’offerta commerciale.</p><button className="primary-button" onClick={() => dialog.current?.close()}><ArrowLeft size={15} /> Torna al tuo progetto</button>
     </dialog>
+    <Chatbot />
   </>;
 }
