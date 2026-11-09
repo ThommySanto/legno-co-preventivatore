@@ -1,10 +1,21 @@
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, Fragment, useEffect, useRef, useState } from 'react';
 import { LoaderCircle, MessageCircle, Send, X } from 'lucide-react';
 
 type Session = { id: string; token: string };
 type ChatItem = { role: 'user' | 'assistant'; content: string };
 const SESSION_KEY = 'legno-co-chat-session';
 const MAX_LENGTH = 500;
+
+function formatAssistantText(text: string) {
+  return text.split('\n').map((line, lineIndex) => {
+    const bullet = /^\s*[-*]\s+/.test(line);
+    const content = bullet ? line.replace(/^\s*[-*]\s+/, '') : line;
+    const parts = content.split(/(\*\*[^*]+\*\*)/g).map((part, index) => part.startsWith('**') && part.endsWith('**')
+      ? <strong key={index}>{part.slice(2, -2)}</strong>
+      : <Fragment key={index}>{part}</Fragment>);
+    return <Fragment key={lineIndex}>{lineIndex > 0 && <br />}<span className={bullet ? 'chat-line chat-bullet' : 'chat-line'}>{parts}</span></Fragment>;
+  });
+}
 
 function readSession(): Session | null {
   try {
@@ -47,7 +58,7 @@ export default function Chatbot() {
       <header className="chat-header"><div><span className="chat-status-dot" /> Assistente Legno & Co.<small>Risponde sul listino disponibile</small></div><button aria-label="Chiudi assistente" onClick={() => setOpen(false)}><X size={18} /></button></header>
       <div className="chat-messages" aria-live="polite">
         {messages.length === 0 && <div className="chat-welcome"><MessageCircle size={25} /><strong>Come posso aiutarti?</strong><p>Chiedimi informazioni su legni, finiture, consegna e prezzi del listino.</p></div>}
-        {messages.map((item, index) => <div className={`chat-bubble ${item.role}`} key={`${item.role}-${index}`}>{item.content}</div>)}
+        {messages.map((item, index) => <div className={`chat-bubble ${item.role}`} key={`${item.role}-${index}`}>{item.role === 'assistant' ? formatAssistantText(item.content) : item.content}</div>)}
         {busy && <div className="chat-bubble assistant chat-loading"><LoaderCircle className="spin" size={15} /> Sto controllando il listino…</div>}
         {error && <p className="chat-error" role="alert">{error}</p>}<div ref={endRef} />
       </div>
