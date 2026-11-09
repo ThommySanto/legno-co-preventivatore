@@ -6,7 +6,7 @@ import ThemeSwitcher from './components/ThemeSwitcher';
 import QuotePrintView from './components/QuotePrintView';
 import ShelfControl from './components/ShelfControl';
 import Chatbot from './components/Chatbot';
-import ProductCatalog from './components/ProductCatalog';
+import ProductCatalog, { type CatalogProduct } from './components/ProductCatalog';
 import { useCatalog } from './hooks/useCatalog';
 import type { Catalog } from './lib/catalog';
 import { getCatalogMode } from './lib/loadCatalog';
@@ -20,7 +20,7 @@ function SectionHeading({ number, title, children }: { number: string; title: st
   return <div className="section-heading"><span className="step-number">{number}</span><h2>{title}</h2>{children}</div>;
 }
 
-function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => void }) {
+function Configurator({ catalog, refresh, selectedProduct }: { catalog: Catalog; refresh: () => void; selectedProduct: CatalogProduct | null }) {
   const [dimensions, setDimensions] = useState<Dimensions>(initialDimensions);
   const [selection, setSelection] = useState<Selection>(defaultSelection);
   const [shelfCount, setShelfCount] = useState('0');
@@ -28,6 +28,15 @@ function Configurator({ catalog, refresh }: { catalog: Catalog; refresh: () => v
   const [showFormula, setShowFormula] = useState(false);
   const [pdfBusy, setPdfBusy] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
+  useEffect(() => {
+    if (!selectedProduct) return;
+    const dimensions = selectedProduct.typicalDimensions;
+    setDimensions({ width: String(dimensions.larghezza ?? 120), height: String(dimensions.altezza ?? 80), depth: String(dimensions.profondita ?? 40) });
+    const compatibleWood = catalog.woods.find(item => selectedProduct.allowedWoods.some(wood => wood.toLowerCase() === item.name.toLowerCase()));
+    if (compatibleWood) setSelection(current => ({ ...current, woodId: compatibleWood.id }));
+    setShelfCount('0');
+    requestAnimationFrame(() => document.getElementById('configuratore')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }, [selectedProduct, catalog.woods]);
   // Preserve valid user choices when the owner changes the listino; replace removed options.
   const resolvedSelection: Selection = {
     woodId: catalog.woods.some(i => i.id === selection.woodId) ? selection.woodId : catalog.woods[0].id,
@@ -159,6 +168,7 @@ export default function App() {
   const dialog = useRef<HTMLDialogElement>(null);
   // Keep the form mounted across refreshes, but hide it immediately until current prices are valid.
   const [lastCatalog, setLastCatalog] = useState<Catalog | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
   useEffect(() => { if (state.catalog) setLastCatalog(state.catalog); }, [state.catalog]);
   const catalog = state.catalog ?? lastCatalog;
   let isLocal = false;
@@ -180,8 +190,8 @@ export default function App() {
       {state.status !== 'ready' && <div className="catalog-state" role={state.status === 'error' ? 'alert' : 'status'}>
         {state.status === 'loading' ? <><LoaderCircle className="spin" size={27} /><h2>Prepariamo il tuo spazio creativo</h2><p>Stiamo aggiornando il listino.</p></> : <><CircleHelp size={28} /><h2>Il listino si fa attendere</h2><p>{state.error}</p><button className="primary-button" onClick={state.refresh}><RefreshCw size={15} /> Riprova</button></>}
       </div>}
-      <div hidden={state.status !== 'ready'}>{catalog && <Configurator catalog={catalog} refresh={state.refresh} />}</div>
-      <ProductCatalog />
+      <div hidden={state.status !== 'ready'}>{catalog && <Configurator catalog={catalog} refresh={state.refresh} selectedProduct={selectedProduct} />}</div>
+      <ProductCatalog onSelect={setSelectedProduct} />
       <section className="closing-note"><span className="closing-icon"><Leaf size={27} strokeWidth={1} /></span><div><h2>Le cose belle iniziano da un’idea.</h2><p>Un legno da scegliere. Uno spazio da immaginare. Un mobile che parla di te.</p></div><span className="closing-lines" aria-hidden="true">///</span></section>
     </main>
     <footer className="site-footer"><span>legno&co. <span>Il legno incontra le tue idee.</span></span><small>Progetto didattico · Azienda e dati inventati</small><a className="admin-link" href="/admin">Area admin</a><button onClick={() => dialog.current?.showModal()}><CircleHelp size={14} /> Informazioni</button></footer>
