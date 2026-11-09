@@ -31,6 +31,9 @@ Aggiornato: 9 novembre 2026
 - Le modifiche del chatbot aggiornano i campi del configuratore tramite evento `legno-co:assistant-config`.
 - Normalizzazione dei nomi Supabase camelCase/snake_case già corretta.
 - Il clic su “Configura questo prodotto” dal catalogo precompila le misure consigliate e un legno compatibile.
+- Il modello 3D ora cambia geometria in base alla famiglia prodotto: contenitore, tavolo/scrivania, letto o seduta.
+- Il carrello restituisce anche la categoria prodotto, così la variante 3D può sincronizzarsi con una selezione fatta dal chatbot.
+- Il catalogo è stato ridotto visivamente: 12 schede iniziali, mini-anteprima 2D, filtri e pulsante “Vedi tutti”.
 
 ### Blocco 5
 
