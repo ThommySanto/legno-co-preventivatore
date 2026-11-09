@@ -277,7 +277,8 @@ export default {
       }
       const answer = await askClaude(message.trim(), catalog, memory, session);
       await appendMessage(session, 'assistant', answer);
-      return json(200, { risposta: answer, sessione: session });
+      const carrello = await rpc('read_chat_cart', { session_id: session.id, access_token: session.token });
+      return json(200, { risposta: answer, sessione: session, carrello });
     } catch (error) {
       console.error('assistant_request_failed', error instanceof Error ? error.message : 'errore sconosciuto');
       return json(503, { errore: 'Assistente non disponibile. Riprova tra poco.' });

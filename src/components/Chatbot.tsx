@@ -44,9 +44,13 @@ export default function Chatbot() {
       const response = await fetch('/api/assistant', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ messaggio: text, sessione: readSession() }) });
       const data: unknown = await response.json();
       if (!response.ok || !data || typeof data !== 'object') throw new Error('Assistente non disponibile');
-      const result = data as { risposta?: unknown; sessione?: unknown; errore?: unknown };
+      const result = data as { risposta?: unknown; sessione?: unknown; carrello?: unknown; errore?: unknown };
       if (typeof result.risposta !== 'string') throw new Error(typeof result.errore === 'string' ? result.errore : 'Assistente non disponibile');
       if (result.sessione && typeof result.sessione === 'object') localStorage.setItem(SESSION_KEY, JSON.stringify(result.sessione));
+      if (Array.isArray(result.carrello) && result.carrello.length) {
+        const row = result.carrello[result.carrello.length - 1] as Record<string, unknown>;
+        window.dispatchEvent(new CustomEvent('legno-co:assistant-config', { detail: row }));
+      }
       setMessages(current => [...current, { role: 'assistant', content: result.risposta as string }]);
     } catch { setError('Non riesco a rispondere in questo momento. Riprova tra poco.'); }
     finally { setBusy(false); }

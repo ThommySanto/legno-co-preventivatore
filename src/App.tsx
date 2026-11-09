@@ -20,7 +20,7 @@ function SectionHeading({ number, title, children }: { number: string; title: st
   return <div className="section-heading"><span className="step-number">{number}</span><h2>{title}</h2>{children}</div>;
 }
 
-function Configurator({ catalog, refresh, selectedProduct }: { catalog: Catalog; refresh: () => void; selectedProduct: CatalogProduct | null }) {
+function Configurator({ catalog, refresh, selectedProduct, assistantConfig }: { catalog: Catalog; refresh: () => void; selectedProduct: CatalogProduct | null; assistantConfig: Record<string, unknown> | null }) {
   const [dimensions, setDimensions] = useState<Dimensions>(initialDimensions);
   const [selection, setSelection] = useState<Selection>(defaultSelection);
   const [shelfCount, setShelfCount] = useState('0');
@@ -37,6 +37,15 @@ function Configurator({ catalog, refresh, selectedProduct }: { catalog: Catalog;
     setShelfCount('0');
     requestAnimationFrame(() => document.getElementById('configuratore')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   }, [selectedProduct, catalog.woods]);
+  useEffect(() => {
+    if (!assistantConfig) return;
+    const number = (key: string, fallback: string) => typeof assistantConfig[key] === 'number' ? String(assistantConfig[key]) : fallback;
+    setDimensions({ width: number('width_cm', dimensions.width), height: number('height_cm', dimensions.height), depth: number('depth_cm', dimensions.depth) });
+    const wood = catalog.woods.find(item => String(assistantConfig.wood ?? '').toLowerCase() === item.name.toLowerCase());
+    const finish = catalog.finishes.find(item => String(assistantConfig.finish ?? '').toLowerCase() === item.name.toLowerCase());
+    setSelection(current => ({ ...current, woodId: wood?.id ?? current.woodId, finishId: finish?.id ?? current.finishId }));
+    requestAnimationFrame(() => document.getElementById('configuratore')?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  }, [assistantConfig, catalog.woods, catalog.finishes]);
   // Preserve valid user choices when the owner changes the listino; replace removed options.
   const resolvedSelection: Selection = {
     woodId: catalog.woods.some(i => i.id === selection.woodId) ? selection.woodId : catalog.woods[0].id,
@@ -169,6 +178,12 @@ export default function App() {
   // Keep the form mounted across refreshes, but hide it immediately until current prices are valid.
   const [lastCatalog, setLastCatalog] = useState<Catalog | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
+  const [assistantConfig, setAssistantConfig] = useState<Record<string, unknown> | null>(null);
+  useEffect(() => {
+    const handleAssistantConfig = (event: Event) => setAssistantConfig((event as CustomEvent<Record<string, unknown>>).detail);
+    window.addEventListener('legno-co:assistant-config', handleAssistantConfig);
+    return () => window.removeEventListener('legno-co:assistant-config', handleAssistantConfig);
+  }, []);
   useEffect(() => { if (state.catalog) setLastCatalog(state.catalog); }, [state.catalog]);
   const catalog = state.catalog ?? lastCatalog;
   let isLocal = false;
@@ -190,7 +205,7 @@ export default function App() {
       {state.status !== 'ready' && <div className="catalog-state" role={state.status === 'error' ? 'alert' : 'status'}>
         {state.status === 'loading' ? <><LoaderCircle className="spin" size={27} /><h2>Prepariamo il tuo spazio creativo</h2><p>Stiamo aggiornando il listino.</p></> : <><CircleHelp size={28} /><h2>Il listino si fa attendere</h2><p>{state.error}</p><button className="primary-button" onClick={state.refresh}><RefreshCw size={15} /> Riprova</button></>}
       </div>}
-      <div hidden={state.status !== 'ready'}>{catalog && <Configurator catalog={catalog} refresh={state.refresh} selectedProduct={selectedProduct} />}</div>
+      <div hidden={state.status !== 'ready'}>{catalog && <Configurator catalog={catalog} refresh={state.refresh} selectedProduct={selectedProduct} assistantConfig={assistantConfig} />}</div>
       <ProductCatalog onSelect={setSelectedProduct} />
       <section className="closing-note"><span className="closing-icon"><Leaf size={27} strokeWidth={1} /></span><div><h2>Le cose belle iniziano da un’idea.</h2><p>Un legno da scegliere. Uno spazio da immaginare. Un mobile che parla di te.</p></div><span className="closing-lines" aria-hidden="true">///</span></section>
     </main>
