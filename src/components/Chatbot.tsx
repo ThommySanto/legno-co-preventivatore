@@ -54,7 +54,6 @@ export default function Chatbot() {
         const row = result.carrello[result.carrello.length - 1] as Record<string, unknown>;
         window.dispatchEvent(new CustomEvent('legno-co:assistant-config', { detail: row }));
       } else if (Array.isArray(result.carrello)) setCart([]);
-      }
       setMessages(current => [...current, { role: 'assistant', content: result.risposta as string }]);
     } catch { setError('Non riesco a rispondere in questo momento. Riprova tra poco.'); }
     finally { setBusy(false); }
