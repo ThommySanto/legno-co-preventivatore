@@ -15,7 +15,11 @@ export default function ProductCatalog() {
     if (!url || !key) return;
     fetch(`${url}/rest/v1/product_catalog?active=eq.true&select=id,name,category,min_dimensions,max_dimensions,allowed_woods,delivery_days,description&order=id`, { headers: { apikey: key, Authorization: `Bearer ${key}` } })
       .then(response => response.ok ? response.json() : Promise.reject())
-      .then(data => setProducts(data as Product[])).catch(() => setError(true));
+      .then(data => setProducts((data as Array<Record<string, unknown>>).map(item => ({
+        id: String(item.id), name: String(item.name), category: String(item.category),
+        minDimensions: item.min_dimensions as Record<string, number>, maxDimensions: item.max_dimensions as Record<string, number>,
+        allowedWoods: item.allowed_woods as string[], deliveryDays: Number(item.delivery_days), description: String(item.description),
+      })))).catch(() => setError(true));
   }, []);
   const categories = useMemo(() => ['Tutte', ...Array.from(new Set(products.map(product => product.category))).sort()], [products]);
   const visible = products.filter(product => (category === 'Tutte' || product.category === category) && `${product.name} ${product.description}`.toLowerCase().includes(query.toLowerCase()));
