@@ -3,13 +3,14 @@ import { LoaderCircle, MessageCircle, Send, X } from 'lucide-react';
 
 type Session = { id: string; token: string };
 type ChatItem = { role: 'user' | 'assistant'; content: string };
-type CartItem = { product_name?: string; product_id?: string; width_cm?: number; height_cm?: number; depth_cm?: number; wood?: string; finish?: string; quantity?: number };
+type CartItem = { product_name?: string; product_category?: string; product_id?: string; width_cm?: number; height_cm?: number; depth_cm?: number; wood?: string; finish?: string; quantity?: number };
 const SESSION_KEY = 'legno-co-chat-session';
 const MAX_LENGTH = 500;
 function normalizeCartItem(value: unknown): CartItem {
   const item = value && typeof value === 'object' ? value as Record<string, unknown> : {};
   return {
     product_name: String(item.product_name ?? item.productName ?? item.name ?? item.product_id ?? item.productId ?? 'Prodotto'),
+    product_category: String(item.product_category ?? item.productCategory ?? item.category ?? ''),
     product_id: String(item.product_id ?? item.productId ?? ''),
     width_cm: Number(item.width_cm ?? item.widthCm ?? 0),
     height_cm: Number(item.height_cm ?? item.heightCm ?? 0),

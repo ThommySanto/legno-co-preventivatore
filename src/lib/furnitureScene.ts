@@ -228,7 +228,7 @@ export function createFurnitureScene(host: HTMLDivElement, initial: FurnitureMod
 
   return {
     update(next: FurnitureModel) {
-      const geometryChanged = next.width !== model.width || next.height !== model.height || next.depth !== model.depth || next.thickness !== model.thickness || next.shelves !== model.shelves;
+      const geometryChanged = next.width !== model.width || next.height !== model.height || next.depth !== model.depth || next.thickness !== model.thickness || next.shelves !== model.shelves || next.variant !== model.variant;
       model = next;
       targetColor.set(next.color);
       targetRoughness = next.finish === 'laccato' ? .25 : next.finish === 'cera-naturale' ? .48 : next.finish === 'grezzo' ? .88 : .68;

@@ -5,10 +5,10 @@ import FurniturePreview from './FurniturePreview';
 import type { Wood, Finish } from '../lib/catalog';
 import { formatNumber, parseDimension, type Dimensions } from '../lib/quote';
 import type { FurnitureScene } from '../lib/furnitureScene';
-import type { FurnitureModel, ModelView } from '../lib/furnitureGeometry';
+import { productVariant, type FurnitureModel, type ModelView } from '../lib/furnitureGeometry';
 
-type Props = { dimensions: Dimensions; wood: Wood; finish: Finish; shelfCount: number; thicknessCm: number; valid: boolean };
-function ModelStudio({ dimensions, wood, finish, shelfCount, thicknessCm, valid, onExpand, active = true, large = false }: Props & { onExpand?: () => void; active?: boolean; large?: boolean }) {
+type Props = { dimensions: Dimensions; wood: Wood; finish: Finish; shelfCount: number; thicknessCm: number; valid: boolean; productCategory?: string; productName?: string };
+function ModelStudio({ dimensions, wood, finish, shelfCount, thicknessCm, valid, productCategory, productName, onExpand, active = true, large = false }: Props & { onExpand?: () => void; active?: boolean; large?: boolean }) {
   const id = useId();
   const root = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
@@ -30,6 +30,7 @@ function ModelStudio({ dimensions, wood, finish, shelfCount, thicknessCm, valid,
     height: valid ? parseDimension(dimensions.height)!.toNumber() : 80,
     depth: valid ? parseDimension(dimensions.depth)!.toNumber() : 40,
     thickness: thicknessCm, shelves: valid ? shelfCount : 0, color: wood.color, finish: finish.id,
+    variant: productVariant(productCategory, productName),
   };
   const latest = useRef(model);
   if (valid) latest.current = model;
@@ -74,7 +75,7 @@ function ModelStudio({ dimensions, wood, finish, shelfCount, thicknessCm, valid,
     }).catch(() => { if (!stopped) setStatus('fallback'); });
     return () => { stopped = true; instance?.dispose(); if (scene.current === instance) scene.current = null; };
   }, [seen, eligible, attempt]);
-  useEffect(() => { if (valid) scene.current?.update(latest.current); }, [model.width, model.height, model.depth, model.thickness, model.shelves, model.color, model.finish, status, valid]);
+  useEffect(() => { if (valid) scene.current?.update(latest.current); }, [model.width, model.height, model.depth, model.thickness, model.shelves, model.color, model.finish, model.variant, status, valid]);
   useEffect(() => { scene.current?.active(active && visible && pageVisible && valid); }, [active, visible, pageVisible, status, valid]);
   useEffect(() => { scene.current?.motion(reduced); }, [reduced, status]);
   useEffect(() => { scene.current?.autoRotate(autoRotate); }, [autoRotate, status]);

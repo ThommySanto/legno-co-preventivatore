@@ -8,6 +8,7 @@ export default function ProductCatalog({ onSelect }: { onSelect: (product: Catal
   const [products, setProducts] = useState<CatalogProduct[]>([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('Tutte');
+  const [showAll, setShowAll] = useState(false);
   const [error, setError] = useState(false);
   useEffect(() => {
     const url = import.meta.env.VITE_SUPABASE_URL;
@@ -22,7 +23,8 @@ export default function ProductCatalog({ onSelect }: { onSelect: (product: Catal
       })))).catch(() => setError(true));
   }, []);
   const categories = useMemo(() => ['Tutte', ...Array.from(new Set(products.map(product => product.category))).sort()], [products]);
-  const visible = products.filter(product => (category === 'Tutte' || product.category === category) && `${product.name} ${product.description}`.toLowerCase().includes(query.toLowerCase()));
+  const filtered = products.filter(product => (category === 'Tutte' || product.category === category) && `${product.name} ${product.description}`.toLowerCase().includes(query.toLowerCase()));
+  const visible = (showAll || query || category !== 'Tutte') ? filtered : filtered.slice(0, 12);
   if (error) return <p className="product-catalog-error">Il catalogo prodotti non è disponibile al momento.</p>;
   if (!products.length) return null;
   return <section className="product-catalog" id="catalogo" aria-labelledby="catalog-title">
@@ -30,5 +32,6 @@ export default function ProductCatalog({ onSelect }: { onSelect: (product: Catal
     <div className="catalog-filters"><label className="catalog-search"><Search size={16} /><span className="sr-only">Cerca nel catalogo</span><input value={query} onChange={event => setQuery(event.target.value)} placeholder="Cerca un prodotto…" /></label><label className="catalog-select"><span className="sr-only">Filtra per categoria</span><select value={category} onChange={event => setCategory(event.target.value)}>{categories.map(item => <option key={item}>{item}</option>)}</select></label></div>
     <div className="product-grid">{visible.map(product => <article className="product-card" key={product.id}><div className="product-card-top"><span className="product-category">{product.category}</span><span className="product-id">{product.id}</span></div><h3>{product.name}</h3><p>{product.description}</p><div className="product-meta"><span>{Object.entries(product.minDimensions).map(([key, value]) => `${labels[key] ?? key}: ${value}–${product.maxDimensions[key]} cm`).join(' · ')}</span><span>{product.deliveryDays} giorni</span></div><div className="product-woods">{product.allowedWoods.join(' · ')}</div><button className="product-configure" type="button" onClick={() => onSelect(product)}>Configura questo prodotto <span aria-hidden="true">→</span></button></article>)}</div>
     {!visible.length && <p className="catalog-empty">Nessun prodotto corrisponde alla ricerca.</p>}
+    {filtered.length > 12 && !query && category === 'Tutte' && <button className="catalog-more" type="button" onClick={() => setShowAll(value => !value)}>{showAll ? 'Mostra meno prodotti' : `Vedi tutti i ${filtered.length} prodotti`}<span aria-hidden="true">{showAll ? '↑' : '↓'}</span></button>}
   </section>;
 }

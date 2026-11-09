@@ -57,6 +57,8 @@ function Configurator({ catalog, refresh, selectedProduct, assistantConfig }: { 
   const wood = catalog.woods.find(i => i.id === resolvedSelection.woodId)!;
   const finish = catalog.finishes.find(i => i.id === resolvedSelection.finishId)!;
   const delivery = catalog.deliveries.find(i => i.id === resolvedSelection.deliveryId)!;
+  const productCategory = selectedProduct?.category ?? String(assistantConfig?.product_category ?? '');
+  const productName = selectedProduct?.name ?? String(assistantConfig?.product_name ?? '');
   const select = (field: keyof Selection, id: string) => setSelection(current => ({ ...current, [field]: id }));
   const reset = () => { setDimensions(initialDimensions); setSelection(defaultSelection); setShelfCount('0'); };
   const savePdf = async () => {
@@ -141,7 +143,7 @@ function Configurator({ catalog, refresh, selectedProduct, assistantConfig }: { 
     <aside className="project-sidebar" aria-label="Anteprima e preventivo">
       <div className="preview-panel">
         <div className="preview-topline"><span className="eyebrow">PRENDE FORMA, LA TUA IDEA</span><span className="preview-label"><span /> Studio</span></div>
-        <ModelViewer dimensions={dimensions} wood={wood} finish={finish} shelfCount={quote?.shelves.count ?? 0} thicknessCm={catalog.settings.shelfThicknessCm} valid={Boolean(quote)} />
+        <ModelViewer dimensions={dimensions} wood={wood} finish={finish} shelfCount={quote?.shelves.count ?? 0} thicknessCm={catalog.settings.shelfThicknessCm} valid={Boolean(quote)} productCategory={productCategory} productName={productName} />
       </div>
 
       <section className="quote-panel" id="riepilogo" aria-labelledby="quote-heading">
