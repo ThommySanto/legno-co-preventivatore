@@ -3,6 +3,7 @@ import { LoaderCircle, MessageCircle, Send, X } from 'lucide-react';
 
 type Session = { id: string; token: string };
 type ChatItem = { role: 'user' | 'assistant'; content: string };
+type CartItem = { product_name?: string; product_id?: string; width_cm?: number; height_cm?: number; depth_cm?: number; wood?: string; finish?: string; quantity?: number };
 const SESSION_KEY = 'legno-co-chat-session';
 const MAX_LENGTH = 500;
 
@@ -32,6 +33,7 @@ export default function Chatbot() {
   const [messages, setMessages] = useState<ChatItem[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cart, setCart] = useState<CartItem[]>([]);
   const endRef = useRef<HTMLDivElement>(null);
   useEffect(() => { if (open) endRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [open, messages, busy]);
 
@@ -48,8 +50,10 @@ export default function Chatbot() {
       if (typeof result.risposta !== 'string') throw new Error(typeof result.errore === 'string' ? result.errore : 'Assistente non disponibile');
       if (result.sessione && typeof result.sessione === 'object') localStorage.setItem(SESSION_KEY, JSON.stringify(result.sessione));
       if (Array.isArray(result.carrello) && result.carrello.length) {
+        setCart(result.carrello as CartItem[]);
         const row = result.carrello[result.carrello.length - 1] as Record<string, unknown>;
         window.dispatchEvent(new CustomEvent('legno-co:assistant-config', { detail: row }));
+      } else if (Array.isArray(result.carrello)) setCart([]);
       }
       setMessages(current => [...current, { role: 'assistant', content: result.risposta as string }]);
     } catch { setError('Non riesco a rispondere in questo momento. Riprova tra poco.'); }
@@ -63,6 +67,7 @@ export default function Chatbot() {
       <div className="chat-messages" aria-live="polite">
         {messages.length === 0 && <div className="chat-welcome"><MessageCircle size={25} /><strong>Come posso aiutarti?</strong><p>Chiedimi informazioni su legni, finiture, consegna e prezzi del listino.</p></div>}
         {messages.map((item, index) => <div className={`chat-bubble ${item.role}`} key={`${item.role}-${index}`}>{item.role === 'assistant' ? formatAssistantText(item.content) : item.content}</div>)}
+        {cart.length > 0 && <div className="chat-cart"><div className="chat-cart-title"><strong>Il tuo carrello</strong><span>{cart.length} {cart.length === 1 ? 'prodotto' : 'prodotti'}</span></div>{cart.map((item, index) => <div className="chat-cart-row" key={`${item.product_id ?? 'item'}-${index}`}><strong>{item.product_name ?? item.product_id ?? 'Prodotto'}</strong><span>{item.width_cm} × {item.height_cm} × {item.depth_cm} cm · {item.wood}</span><small>{item.finish} · quantità {item.quantity ?? 1}</small></div>)}<small className="chat-cart-help">Scrivimi “rimuovi la riga 1” oppure “svuota il carrello” per modificarlo.</small></div>}
         {busy && <div className="chat-bubble assistant chat-loading"><LoaderCircle className="spin" size={15} /> Sto controllando il listino…</div>}
         {error && <p className="chat-error" role="alert">{error}</p>}<div ref={endRef} />
       </div>
