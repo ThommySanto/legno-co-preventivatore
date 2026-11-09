@@ -272,6 +272,7 @@ export default {
       const session = validSession(suppliedSession) ? suppliedSession : await openSession();
       let memory = await readMemory(session);
       await appendMessage(session, 'user', message.trim());
+      await rpc<void>('log_chat_event', { p_session_id: session.id, p_access_token: session.token, p_event_type: 'message', p_input_chars: message.trim().length });
       memory = { ...memory, messages: [...memory.messages, { id: 0, role: 'user', content: message.trim() }] };
       if (memory.messages.length > MAX_HISTORY_MESSAGES) {
         const next = await summarizeMemory(memory);
