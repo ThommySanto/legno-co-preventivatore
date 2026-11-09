@@ -132,6 +132,7 @@ ${JSON.stringify(catalog)}
 - Gli importi del listino sono IVA esclusa. Scrivi gli euro nel formato italiano, ad esempio 1.234,56 €.
 - Questo e' il blocco 1: non calcolare superfici, IVA o preventivi completi a mente. Se l'utente fornisce misure, comunica i prezzi applicabili e spiega che il calcolo esatto arrivera' nel blocco successivo.
 - Per prodotti, carrello e preventivi usa sempre gli strumenti disponibili. Non calcolare mai un totale a mente e non inventare l'identificativo di un prodotto.
+- Per domande su garanzia, consegne, cura, resi, montaggio, finiture, legni, pagamenti, misure, contatti o altri servizi usa cerca_faq e rispondi solo dalle fonti restituite; cita sempre la fonte.
 - Per aggiungere un prodotto cerca prima nel catalogo; usa solo gli id restituiti da cerca_prodotti.
 - Per svuotare il carrello chiedi conferma esplicita e chiama lo strumento solo dopo una risposta affermativa.
 - Non mostrare ragionamenti interni.
@@ -139,6 +140,7 @@ ${JSON.stringify(catalog)}
 }
 
 const tools = [
+  { name: 'cerca_faq', description: 'Cerca nelle FAQ aziendali una risposta documentata. Usalo per informazioni non contenute nel listino prezzi.', input_schema: { type: 'object', properties: { testo: { type: 'string' } }, required: ['testo'] } },
   { name: 'cerca_prodotti', description: 'Cerca prodotti nel catalogo per testo e/o categoria.', input_schema: { type: 'object', properties: { testo: { type: 'string' }, categoria: { type: 'string' } }, required: [] } },
   { name: 'aggiungi_al_carrello', description: 'Aggiunge un prodotto configurato. Cerca prima il prodotto e rispetta i limiti restituiti.', input_schema: { type: 'object', properties: { prodotto_id: { type: 'string' }, larghezza: { type: 'number' }, altezza: { type: 'number' }, profondita: { type: 'number' }, legno: { type: 'string' }, finitura: { type: 'string' }, quantita: { type: 'integer', minimum: 1, maximum: 20 } }, required: ['prodotto_id','larghezza','altezza','profondita','legno','finitura','quantita'] } },
   { name: 'mostra_carrello', description: 'Mostra le righe del carrello numerate.', input_schema: { type: 'object', properties: {}, required: [] } },
@@ -149,6 +151,7 @@ const tools = [
 
 async function runTool(session: ChatSession, call: ToolCall): Promise<string> {
   const input = call.input;
+  if (call.name === 'cerca_faq') return JSON.stringify(await rpc('search_faq_documents', { search_text: input.testo ?? '', limit_count: 3 }));
   if (call.name === 'cerca_prodotti') return JSON.stringify(await rpc('search_product_catalog', { search_text: input.testo ?? '', search_category: input.categoria ?? '' }));
   if (call.name === 'aggiungi_al_carrello') return JSON.stringify(await rpc('add_chat_cart_item', { session_id: session.id, access_token: session.token, product_id: input.prodotto_id, width_cm: input.larghezza, height_cm: input.altezza, depth_cm: input.profondita, wood: input.legno, finish: input.finitura, quantity: input.quantita }));
   if (call.name === 'mostra_carrello') return JSON.stringify(await rpc('read_chat_cart', { session_id: session.id, access_token: session.token }));
