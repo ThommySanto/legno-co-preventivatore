@@ -88,7 +88,7 @@ async function rpc<T>(name: string, params: Record<string, unknown>): Promise<T>
     cache: 'no-store',
   });
   const body = await response.text();
-  if (!response.ok) throw new Error(`Supabase RPC ${name} non disponibile: ${body.slice(0, 240)}`);
+  if (!response.ok) throw new Error(`Supabase RPC ${name} non disponibile`);
   return (body ? JSON.parse(body) : undefined) as T;
 }
 
