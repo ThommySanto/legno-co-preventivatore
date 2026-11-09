@@ -157,7 +157,11 @@ async function runTool(session: ChatSession, call: ToolCall): Promise<string> {
   if (call.name === 'mostra_carrello') return JSON.stringify(await rpc('read_chat_cart', { session_id: session.id, access_token: session.token }));
   if (call.name === 'rimuovi_dal_carrello') { await rpc('remove_chat_cart_item', { session_id: session.id, access_token: session.token, row_number: input.riga }); return 'Riga rimossa.'; }
   if (call.name === 'svuota_carrello') { await rpc('clear_chat_cart', { session_id: session.id, access_token: session.token, confirmed: input.confermato }); return 'Carrello svuotato.'; }
-  if (call.name === 'calcola_preventivo') return JSON.stringify(await rpc('calculate_chat_quote', { session_id: session.id, access_token: session.token, delivery: input.consegna }));
+  if (call.name === 'calcola_preventivo') {
+    const requested = String(input.consegna ?? '').trim().toLowerCase();
+    const delivery = requested.includes('oltre') ? 'Oltre 50 km' : requested.includes('entro') ? 'Entro 50 km' : requested.includes('ritiro') ? 'Ritiro in sede' : input.consegna;
+    return JSON.stringify(await rpc('calculate_chat_quote', { session_id: session.id, access_token: session.token, delivery }));
+  }
   throw new Error('Strumento non disponibile');
 }
 
