@@ -115,6 +115,9 @@ async function readMemory(session: ChatSession): Promise<ChatMemory> {
 async function appendMessage(session: ChatSession, role: ChatMessage['role'], content: string) {
   await rpc<void>('append_chat_message', { session_id: session.id, access_token: session.token, message_role: role, message_content: content });
 }
+async function recordEvent(session: ChatSession, type: 'cart_change' | 'quote', metadata: Record<string, unknown> = {}) {
+  try { await rpc<void>('log_chat_event', { p_session_id: session.id, p_access_token: session.token, p_event_type: type, p_metadata: metadata }); } catch { /* Analytics must never interrupt the customer flow. */ }
+}
 
 function systemPrompt(catalog: PricingCatalog): string {
   return `<ruolo>
@@ -153,14 +156,14 @@ async function runTool(session: ChatSession, call: ToolCall): Promise<string> {
   const input = call.input;
   if (call.name === 'cerca_faq') return JSON.stringify(await rpc('search_faq_documents', { search_text: input.testo ?? '', limit_count: 3 }));
   if (call.name === 'cerca_prodotti') return JSON.stringify(await rpc('search_product_catalog', { search_text: input.testo ?? '', search_category: input.categoria ?? '' }));
-  if (call.name === 'aggiungi_al_carrello') return JSON.stringify(await rpc('add_chat_cart_item', { session_id: session.id, access_token: session.token, product_id: input.prodotto_id, width_cm: input.larghezza, height_cm: input.altezza, depth_cm: input.profondita, wood: input.legno, finish: input.finitura, quantity: input.quantita }));
+  if (call.name === 'aggiungi_al_carrello') { const item = await rpc('add_chat_cart_item', { session_id: session.id, access_token: session.token, product_id: input.prodotto_id, width_cm: input.larghezza, height_cm: input.altezza, depth_cm: input.profondita, wood: input.legno, finish: input.finitura, quantity: input.quantita }); await recordEvent(session, 'cart_change', { action: 'add', product_id: input.prodotto_id }); return JSON.stringify(item); }
   if (call.name === 'mostra_carrello') return JSON.stringify(await rpc('read_chat_cart', { session_id: session.id, access_token: session.token }));
-  if (call.name === 'rimuovi_dal_carrello') { await rpc('remove_chat_cart_item', { session_id: session.id, access_token: session.token, row_number: input.riga }); return 'Riga rimossa.'; }
-  if (call.name === 'svuota_carrello') { await rpc('clear_chat_cart', { session_id: session.id, access_token: session.token, confirmed: input.confermato }); return 'Carrello svuotato.'; }
+  if (call.name === 'rimuovi_dal_carrello') { await rpc('remove_chat_cart_item', { session_id: session.id, access_token: session.token, row_number: input.riga }); await recordEvent(session, 'cart_change', { action: 'remove' }); return 'Riga rimossa.'; }
+  if (call.name === 'svuota_carrello') { await rpc('clear_chat_cart', { session_id: session.id, access_token: session.token, confirmed: input.confermato }); await recordEvent(session, 'cart_change', { action: 'clear' }); return 'Carrello svuotato.'; }
   if (call.name === 'calcola_preventivo') {
     const requested = String(input.consegna ?? '').trim().toLowerCase();
     const delivery = requested.includes('oltre') ? 'Oltre 50 km' : requested.includes('entro') ? 'Entro 50 km' : requested.includes('ritiro') ? 'Ritiro in sede' : input.consegna;
-    return JSON.stringify(await rpc('calculate_chat_quote', { session_id: session.id, access_token: session.token, delivery }));
+    const quote = await rpc('calculate_chat_quote', { session_id: session.id, access_token: session.token, delivery }); await recordEvent(session, 'quote', { delivery }); return JSON.stringify(quote);
   }
   throw new Error('Strumento non disponibile');
 }
