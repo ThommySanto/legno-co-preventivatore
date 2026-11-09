@@ -86,7 +86,8 @@ async function rpc<T>(name: string, params: Record<string, unknown>): Promise<T>
     cache: 'no-store',
   });
   if (!response.ok) throw new Error(`Supabase RPC ${name} non disponibile`);
-  return response.json() as Promise<T>;
+  const body = await response.text();
+  return (body ? JSON.parse(body) : undefined) as T;
 }
 
 function validSession(value: unknown): value is ChatSession {
