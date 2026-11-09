@@ -1,5 +1,7 @@
 const MAX_MESSAGE_LENGTH = 500;
 const ANTHROPIC_MODEL = 'claude-haiku-5-5';
+const MAX_HISTORY_MESSAGES = 12;
+const RECENT_MESSAGES_TO_KEEP = 6;
 
 type CatalogItem = {
   name: string;
@@ -14,6 +16,10 @@ type PricingCatalog = {
   deliveries: CatalogItem[];
   settings: { vatRate: number; minDimensionCm: number; maxDimensionCm: number };
 };
+
+type ChatSession = { id: string; token: string };
+type ChatMessage = { id: number; role: 'user' | 'assistant'; content: string };
+type ChatMemory = { summary: string; summaryMessageCount: number; messages: ChatMessage[] };
 
 function json(status: number, body: Record<string, unknown>) {
   return Response.json(body, {
@@ -64,6 +70,49 @@ async function loadCatalog(): Promise<PricingCatalog> {
   return catalog;
 }
 
+function supabaseConfig() {
+  const url = process.env.VITE_SUPABASE_URL;
+  const key = process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!url || !key) throw new Error('Supabase non configurato');
+  return { url, key };
+}
+
+async function rpc<T>(name: string, params: Record<string, unknown>): Promise<T> {
+  const { url, key } = supabaseConfig();
+  const response = await fetch(`${url}/rest/v1/rpc/${name}`, {
+    method: 'POST',
+    headers: { apikey: key, Authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+    body: JSON.stringify(params),
+    cache: 'no-store',
+  });
+  if (!response.ok) throw new Error(`Supabase RPC ${name} non disponibile`);
+  return response.json() as Promise<T>;
+}
+
+function validSession(value: unknown): value is ChatSession {
+  return !!value && typeof value === 'object'
+    && typeof (value as ChatSession).id === 'string'
+    && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test((value as ChatSession).id)
+    && typeof (value as ChatSession).token === 'string'
+    && /^[0-9a-f]{64}$/i.test((value as ChatSession).token);
+}
+
+async function openSession(): Promise<ChatSession> {
+  const session = { id: crypto.randomUUID(), token: Array.from(crypto.getRandomValues(new Uint8Array(32)), byte => byte.toString(16).padStart(2, '0')).join('') };
+  await rpc<void>('open_chat_session', { session_id: session.id, access_token: session.token });
+  return session;
+}
+
+async function readMemory(session: ChatSession): Promise<ChatMemory> {
+  const memory = await rpc<ChatMemory | null>('read_chat_memory', { session_id: session.id, access_token: session.token });
+  if (!memory || !Array.isArray(memory.messages)) throw new Error('Sessione non trovata');
+  return memory;
+}
+
+async function appendMessage(session: ChatSession, role: ChatMessage['role'], content: string) {
+  await rpc<void>('append_chat_message', { session_id: session.id, access_token: session.token, message_role: role, message_content: content });
+}
+
 function systemPrompt(catalog: PricingCatalog): string {
   return `<ruolo>
 Sei l'assistente di Legno & Co. Rispondi esclusivamente in italiano, con tono cordiale e breve.
@@ -81,7 +130,7 @@ ${JSON.stringify(catalog)}
 </regole>`;
 }
 
-async function askClaude(message: string, catalog: PricingCatalog) {
+async function callClaude(system: string, messages: Array<{ role: 'user' | 'assistant'; content: string }>) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) throw new Error('Anthropic non configurato');
 
@@ -95,8 +144,8 @@ async function askClaude(message: string, catalog: PricingCatalog) {
     body: JSON.stringify({
       model: ANTHROPIC_MODEL,
       max_tokens: 512,
-      system: systemPrompt(catalog),
-      messages: [{ role: 'user', content: message }],
+      system,
+      messages,
     }),
   });
   if (!response.ok) throw new Error(`Anthropic HTTP ${response.status}`);
@@ -121,6 +170,26 @@ async function askClaude(message: string, catalog: PricingCatalog) {
   return answer;
 }
 
+async function summarizeMemory(memory: ChatMemory): Promise<{ summary: string; summarizedMessages: number }> {
+  const olderMessages = memory.messages.slice(0, -RECENT_MESSAGES_TO_KEEP);
+  if (!olderMessages.length) return { summary: memory.summary, summarizedMessages: memory.summaryMessageCount };
+  const summary = await callClaude(
+    'Riassumi in italiano i dati utili della conversazione: nome, misure, legno, finitura, consegna e richieste. Non inventare. Massimo 180 parole.',
+    [{ role: 'user', content: JSON.stringify({ riepilogoPrecedente: memory.summary, messaggi: olderMessages.map(({ role, content }) => ({ role, content })) }) }],
+  );
+  return { summary, summarizedMessages: memory.summaryMessageCount + olderMessages.length };
+}
+
+async function askClaude(message: string, catalog: PricingCatalog, memory: ChatMemory) {
+  const recent = memory.messages
+    .slice(-RECENT_MESSAGES_TO_KEEP)
+    .map(({ role, content }) => ({ role, content }));
+  while (recent[0]?.role === 'assistant') recent.shift();
+  if (!recent.length) recent.push({ role: 'user', content: message });
+  const prompt = memory.summary ? `${systemPrompt(catalog)}\n\n<riassunto_conversazione>\n${memory.summary}\n</riassunto_conversazione>` : systemPrompt(catalog);
+  return callClaude(prompt, recent);
+}
+
 export default {
   async fetch(request: Request): Promise<Response> {
     if (request.method !== 'POST') return json(405, { errore: 'Metodo non consentito.' });
@@ -139,7 +208,19 @@ export default {
 
     try {
       const catalog = await loadCatalog();
-      return json(200, { risposta: await askClaude(message.trim(), catalog) });
+      const suppliedSession = payload && typeof payload === 'object' ? (payload as { sessione?: unknown }).sessione : undefined;
+      const session = validSession(suppliedSession) ? suppliedSession : await openSession();
+      let memory = await readMemory(session);
+      await appendMessage(session, 'user', message.trim());
+      memory = { ...memory, messages: [...memory.messages, { id: 0, role: 'user', content: message.trim() }] };
+      if (memory.messages.length > MAX_HISTORY_MESSAGES) {
+        const next = await summarizeMemory(memory);
+        await rpc<void>('update_chat_summary', { session_id: session.id, access_token: session.token, next_summary: next.summary, summarized_messages: next.summarizedMessages });
+        memory = { ...memory, summary: next.summary, summaryMessageCount: next.summarizedMessages, messages: memory.messages.slice(-RECENT_MESSAGES_TO_KEEP) };
+      }
+      const answer = await askClaude(message.trim(), catalog, memory);
+      await appendMessage(session, 'assistant', answer);
+      return json(200, { risposta: answer, sessione: session });
     } catch (error) {
       console.error('assistant_request_failed', error instanceof Error ? error.message : 'errore sconosciuto');
       return json(503, { errore: 'Assistente non disponibile. Riprova tra poco.' });
